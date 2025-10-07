@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { SaleForm } from "@/components/sales/SalesForm";
 import { SaleFormData, SaleInProgress } from "@/app/dashboard/sales/types";
-import { uuidv4 } from "zod";
+import { v4 as uuidv4 } from "uuid";
 import { saveSaleInProgress } from "@/app/dashboard/sales/utils/localStorage";
 
 type Props = {
@@ -23,8 +23,12 @@ const toSaleInProgress = (
   data: SaleFormData,
   fallbackId?: string
 ): SaleInProgress => ({
-  ...data,
   id: data.id ?? fallbackId ?? uuidv4(),
+  concept: data.concept,
+  salePrice: data.salePrice,
+  totalPrice: data.totalPrice,
+  paymentMethod: data.paymentMethod,
+  products: data.products ?? [],
 });
 
 export const SalesFormModal: React.FC<Props> = ({
@@ -43,13 +47,30 @@ export const SalesFormModal: React.FC<Props> = ({
   };
 
   const persistAndClose = () => {
-    if (currentFormData && currentFormData.concept) {
-      const saleToSave = toSaleInProgress(currentFormData, initialData?.id);
-      saveSaleInProgress(saleToSave);
-      onClose(saleToSave);
-    } else {
+    if (!currentFormData) {
       onClose();
+      return;
     }
+
+    const { concept, paymentMethod, totalPrice, products } = currentFormData;
+
+    // Validar si el formulario tiene datos significativos
+    const isEmpty =
+      (!concept || concept.trim() === "") &&
+      (!paymentMethod || paymentMethod.trim() === "") &&
+      (!totalPrice || totalPrice <= 0) &&
+      (!products || products.length === 0);
+
+    if (isEmpty) {
+      // No guardamos nada si el formulario está vacío
+      onClose();
+      return;
+    }
+
+    // Si hay datos válidos, entonces sí persistimos
+    const saleToSave = toSaleInProgress(currentFormData, initialData?.id);
+    saveSaleInProgress(saleToSave);
+    onClose(saleToSave);
   };
 
   const handleCancel = () => {
@@ -92,7 +113,7 @@ export const SalesFormModal: React.FC<Props> = ({
             <button
               className="btn btn-destructive"
               onClick={() => {
-                onDelete(initialData.id);
+                onDelete(initialData.id!);
                 onClose();
               }}
             >

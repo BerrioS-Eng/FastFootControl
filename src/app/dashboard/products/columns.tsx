@@ -16,25 +16,25 @@ import { Product } from "./types";
 
 export const columns: ColumnDef<Product>[] = [
     {
-        accessorKey: "producto",
+        accessorKey: "productName",
         header: "Nombre producto",
     },
     {
-        accessorKey: "precio_neto",
+        accessorKey: "netPrice",
         header: "Precio neto",
     },
     {
-        accessorKey: "margen_ganancia",
+        accessorKey: "profitMargin",
         header: "Margen ganancia",
     },
     {
-        accessorKey: "precio_venta",
+        accessorKey: "salePrice",
         header: "Precio venta",
     },
     {
         id: "actions",
         cell: ({ row }) => {
-            const payment = row.original;
+            const product = row.original;
             const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
             return (
@@ -49,7 +49,7 @@ export const columns: ColumnDef<Product>[] = [
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                             <DropdownMenuItem
-                                onClick={() => navigator.clipboard.writeText(payment.productId)}
+                                onClick={() => navigator.clipboard.writeText(product.productId)}
                             >
                                 Copiar ID del producto
                             </DropdownMenuItem>
@@ -64,12 +64,12 @@ export const columns: ColumnDef<Product>[] = [
                         </DropdownMenuContent>
                     </DropdownMenu>
                     <DeleteProduct
-                        id={payment.productId}
+                        id={product.productId}
                         open={isDeleteDialogOpen}
                         onOpenChange={setIsDeleteDialogOpen}
                         onDeleteSuccess={() => {
                             // Optionally trigger a data refresh here
-                            console.log(`Producto con ID ${payment.productId} eliminado`);
+                            console.log(`Producto con ID ${product.productId} eliminado`);
                         }}
                     />
                 </>

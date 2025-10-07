@@ -16,24 +16,25 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 const saleFormSchema = z.object({
-    id: z.string(),
+    id: z.string().optional(),
     concept: z.string().min(1, "El concepto es obligatorio"),
-    salePrice: z.number({
-        message: "El precio de venta es obligatorio",
-    }),
-    products: z.array(
-        z.object({
-            product: z.string().min(1, "El producto es obligatorio"),
-            quantity: z.number().min(1, "La cantidad debe ser al menos 1"),
-            salePrice: z.number(),
-            totalPrice: z.number(),
-        })
-    ),
-    totalPrice: z.number(),
-    paymentMethod: z.string(),
+    salePrice: z.number().optional(),
+    totalPrice: z.number().min(0, "El total debe ser mayor o igual a 0"),
+    paymentMethod: z.string().min(1, "El método de pago es obligatorio"),
+    products: z
+        .array(
+            z.object({
+                id: z.string(), 
+                product: z.string().min(1, "El producto es obligatorio"),
+                quantity: z.number().min(1, "La cantidad debe ser al menos 1"),
+                salePrice: z.number(),
+                totalPrice: z.number(),
+            })
+        )
+        .optional(),
 });
 
-export type SaleFormData = z.infer<typeof saleFormSchema>;
+export type SaleFormData = z.infer<typeof saleFormSchema>
 
 type SaleFormProps = {
     initialValues?: Partial<SaleFormData>;
@@ -53,11 +54,14 @@ export const SaleForm: React.FC<SaleFormProps> = ({
     const form = useForm<SaleFormData>({
         resolver: zodResolver(saleFormSchema),
         defaultValues: {
-            concept: "",
-            totalPrice: 0,
-            paymentMethod: "",
-            ...initialValues,
+            id: initialValues?.id ?? undefined,
+            concept: initialValues?.concept ?? "",
+            totalPrice: initialValues?.totalPrice ?? 0,
+            paymentMethod: initialValues?.paymentMethod ?? "",
+            products: initialValues?.products ?? [],
+            salePrice: initialValues?.salePrice ?? undefined,
         },
+        mode: "onChange",
     });
 
     useEffect(() => {

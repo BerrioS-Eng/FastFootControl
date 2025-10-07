@@ -56,7 +56,7 @@ export default function Home( { onCustomEvent }:Props ) {
             <Image
               alt='sobre_nosotros'
               src='/sobre_nosotros.jpeg'
-              width={250}
+              width={300}
               height={300}
               className='rounded-md object-cover'
             />

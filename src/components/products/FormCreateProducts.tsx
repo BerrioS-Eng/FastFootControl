@@ -172,24 +172,28 @@ const FormCreateProducts = () => {
     async function onSubmit(data: z.infer<typeof FormSchema>) {
         const formData = new FormData();
 
-        formData.append('productName', data.productName);
-        formData.append('profitMargin', data.profitMargin);
-        formData.append('netPrice', data.netPrice);
-        formData.append('salePrice', data.salePrice);
-        formData.append('labor_coast', data.laborCoast);
+        const requestPayload = {
+            productName: data.productName,
+            profitMargin: data.profitMargin,
+            labour: data.laborCoast,
+            ingredients: data.inputListIngredients?.map(({ nombre, precio }) => ({
+                name: nombre,
+                cost: precio,
+            })) || [],
+            directCosts: data.inputListDirects?.map(({ nombre, precio }) => ({
+                name: nombre,
+                cost: precio,
+            })) || []
+        };
 
-        if (data.inputListIngredients) {
-            const ingredients = data.inputListIngredients.map(({ nombre }) => nombre)
-            formData.append('ingredients', JSON.stringify(ingredients));
-        }
+        // Adjuntar el JSON como parte de la solicitud
+        formData.append("request", JSON.stringify(requestPayload));
 
+        // Adjuntar la imagen al formulario, si existe
         if (selectedImage) {
-            formData.append('imageUrl', selectedImage);
+            formData.append("image", selectedImage);
         }
 
-        // Log para depuración
-        console.log('Datos del formulario:', data);
-        console.log('Imagen seleccionada:', selectedImage);
         console.log('=== CONTENIDO DE FORMDATA ===');
         for (let [key, value] of formData.entries()) {
             if (value instanceof File) {
@@ -204,12 +208,11 @@ const FormCreateProducts = () => {
             }
         }
         console.log('================================');
-        //*******************
 
-        //Solicitud API
+        // Enviar la solicitud al backend
         try {
             const res = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/productos`,
+                `http://192.168.101.11:8080/products/create-product`,
                 {
                     method: "POST",
                     body: formData,

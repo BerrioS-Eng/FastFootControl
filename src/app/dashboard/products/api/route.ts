@@ -1,7 +1,7 @@
 import { Product } from "../types";
 
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
+const API_URL = "http://192.168.101.11:8080/products";
 
 export async function getProducts(): Promise<Product[]> {
     const res = await fetch(`${API_URL}/get-all-products`, {

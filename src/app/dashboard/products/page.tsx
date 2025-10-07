@@ -11,11 +11,13 @@ export default   function Products() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/productos`)
+        fetch(`http://192.168.101.11:8080/products/get-all-products`)
             .then((res) => res.json())
             .then(setProductos)
             .finally(() => setLoading(false));
     }, []);
+
+    console.log(productos);
 
     return (
         <div className='mx-8 my-6 flex flex-col gap-9'>
