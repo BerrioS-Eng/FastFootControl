@@ -8,18 +8,12 @@ export interface LoginRequest {
 export interface LoginResponse {
   token: string;
   user: UserDTO;
-  message: string;
 }
 
 export interface UserDTO {
   id?: number;
   userName: string;
-  password?: string;
-  email: string;
-  fullName: string;
   role: string;
-  createdAt?: Date;
-  updatedAt?: Date;
 }
 
 export interface ProductDTO {
