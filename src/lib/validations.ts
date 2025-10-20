@@ -25,6 +25,9 @@ export const userSchema = z.object({
     .min(6, "La contraseña debe tener al menos 6 caracteres"),
   role: z.string()
     .min(1, "El rol es requerido"),
+  area: z.string()
+    .min(1, "El área es requerida")
+    .min(2, "El área debe tener al menos 2 caracteres"),
 });
 
 export const userEditSchema = userSchema.extend({
@@ -32,6 +35,9 @@ export const userEditSchema = userSchema.extend({
     .min(6, "La contraseña debe tener al menos 6 caracteres")
     .optional()
     .or(z.literal("")),
+  area: z.string()
+    .min(1, "El área es requerida")
+    .min(2, "El área debe tener al menos 2 caracteres"),
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;

@@ -39,3 +39,39 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+Thumbs.db
+.DS_Store
+
+# Logs
+logs
+*.log
+
+# Temporary files
+temp/
+tmp/
+
+# Frontend specific ignores
+.next/
+/out/
+/dist/
+/build/
+
+# Backend files (should not be in frontend)
+*.sql
+database/
+*.jar
+target/
+.apt_generated/
+start-backend.*
+
+# Sensitive information
+**/credentials*
+**/*secret*

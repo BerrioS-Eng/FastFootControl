@@ -1,4 +1,3 @@
-// Authentication Hook
 'use client';
 
 import { useState, useEffect, useContext, createContext, ReactNode } from 'react';
@@ -22,45 +21,56 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session on mount
-    const existingToken = AuthService.getToken();
-    const existingUser = AuthService.getCurrentUser();
+    const savedToken = localStorage.getItem('auth_token');
+    const savedUser = localStorage.getItem('user_data');
     
-    if (existingToken && existingUser) {
-      setToken(existingToken);
-      setUser(existingUser);
+    if (savedToken && savedUser) {
+      try {
+        setToken(savedToken);
+        setUser(JSON.parse(savedUser));
+      } catch (error) {
+        console.error('Error parsing saved user data:', error);
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('user_data');
+      }
     }
-    
     setIsLoading(false);
   }, []);
 
   const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
+    setIsLoading(true);
     try {
       const response = await AuthService.login(credentials);
-      setToken(response.token);
       setUser(response.user);
+      setToken(response.token);
+      setIsLoading(false);
       return response;
     } catch (error) {
+      setIsLoading(false);
       throw error;
     }
   };
 
   const logout = () => {
     AuthService.logout();
-    setToken(null);
     setUser(null);
+    setToken(null);
   };
 
-  const value = {
-    user,
-    token,
-    isAuthenticated: !!token && !!user,
-    isLoading,
-    login,
-    logout,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        isAuthenticated: !!user && !!token,
+        isLoading,
+        login,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

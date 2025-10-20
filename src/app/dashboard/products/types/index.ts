@@ -2,8 +2,7 @@
 // Re-export types from our centralized API types
 export type { 
   ProductDTO as Product, 
-  ProductRequest, 
-  ProductEdit,
+  ProductRequest,
   ProductQuantity 
 } from '@/types/api';
 

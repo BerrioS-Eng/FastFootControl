@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
@@ -47,13 +47,26 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
 
   return (
     <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">
-          Iniciar Sesión
-        </CardTitle>
-        <CardDescription className="text-center">
-          Ingresa tus credenciales para acceder al sistema
-        </CardDescription>
+      <CardHeader className="space-y-4">
+        <div className="flex flex-col items-center space-y-3">
+          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
+            <img
+              src="/logo.png"
+              alt="FastFoodControl Logo"
+              width={80}
+              height={80}
+              className="object-contain w-full h-full"
+              onError={(e) => {
+                console.log('Error loading logo:', e);
+                e.currentTarget.style.display = 'none';
+              }}
+              onLoad={() => console.log('Logo loaded successfully')}
+            />
+          </div>
+          <CardTitle className="text-2xl font-bold text-center text-gray-800">
+            FastFoodControl
+          </CardTitle>
+        </div>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -108,7 +121,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
 
           <Button
             type="submit"
-            className="w-full"
+            className="w-full bg-orange-400 hover:bg-orange-500 text-white"
             disabled={isLoading}
           >
             {isLoading ? (

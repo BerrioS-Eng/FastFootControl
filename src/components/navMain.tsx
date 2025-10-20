@@ -9,6 +9,7 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 export function NavMain({
     items,
@@ -19,6 +20,7 @@ export function NavMain({
         icon?: Icon
     }[]
 }) {
+    const pathname = usePathname()
     
     return (
         <SidebarGroup>
@@ -28,7 +30,10 @@ export function NavMain({
                     <SidebarMenuItem className="flex items-center gap-2">
                         <SidebarMenuButton
                             tooltip="Registrar ventas"
-                            className="bg-[#FB8C00] text-primary-foreground font-bold hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
+                            className={pathname === "/dashboard/sales" 
+                                ? "bg-[#FB8C00] text-white font-bold hover:bg-[#F57C00] hover:text-white active:bg-[#F57C00] active:text-white min-w-8 duration-200 ease-linear" 
+                                : "bg-gray-100 text-gray-700 font-bold hover:bg-[#FB8C00] hover:text-white active:bg-[#FB8C00] active:text-white min-w-8 duration-200 ease-linear"
+                            }
                         >
                             <IconShoppingCart />
                             <span>Ventas</span>
@@ -37,16 +42,25 @@ export function NavMain({
                     </Link>
                 </SidebarMenu>
                 <SidebarMenu>
-                    {items.map((item) => (
-                        <Link href={item.url} key={item.title}>
-                            <SidebarMenuItem key={item.title}>
-                                <SidebarMenuButton tooltip={item.title}>
-                                    {item.icon && <item.icon />}
-                                    <span className="font-bold">{item.title}</span>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </Link>
-                    ))}
+                    {items.map((item) => {
+                        const isActive = pathname === item.url
+                        return (
+                            <Link href={item.url} key={item.title}>
+                                <SidebarMenuItem key={item.title}>
+                                    <SidebarMenuButton 
+                                        tooltip={item.title}
+                                        className={isActive 
+                                            ? "bg-[#FB8C00] text-white font-bold hover:bg-[#F57C00] hover:text-white active:bg-[#F57C00] active:text-white" 
+                                            : "font-bold hover:bg-gray-100"
+                                        }
+                                    >
+                                        {item.icon && <item.icon />}
+                                        <span className="font-bold">{item.title}</span>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            </Link>
+                        )
+                    })}
                 </SidebarMenu>
             </SidebarGroupContent>
         </SidebarGroup>

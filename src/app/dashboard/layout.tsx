@@ -13,15 +13,19 @@ export default function DashboardLayout({children}: { children: React.ReactNode 
             <SidebarProvider
                 style={
                     {
-                        "--sidebar-width": "calc(var(--spacing) * 72)",
-                        "--header-height": "calc(var(--spacing) * 12)",
+                        "--sidebar-width": "280px",
+                        "--sidebar-width-mobile": "calc(100vw - 2rem)",
+                        "--header-height": "3.5rem",
                     } as React.CSSProperties
                 }
+                defaultOpen={false} // Better mobile experience
             >
                 <AppSidebar variant='inset' />
-                <SidebarInset>
+                <SidebarInset className="flex flex-col min-h-screen">
                     <SiteHeader />
-                    {children}
+                    <main className="flex-1 p-2 sm:p-4 md:p-6 overflow-x-auto">
+                        {children}
+                    </main>
                 </SidebarInset>
             </SidebarProvider>
         </ProtectedRoute>

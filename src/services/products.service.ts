@@ -1,6 +1,6 @@
 // Products Service
 import { apiClient, API_ENDPOINTS } from '@/lib/api-config';
-import { ProductDTO, ProductRequest, ProductEdit } from '@/types/api';
+import { ProductDTO, ProductRequest } from '@/types/api';
 
 export class ProductsService {
   static async createProduct(productData: ProductRequest): Promise<ProductDTO> {
@@ -17,7 +17,7 @@ export class ProductsService {
       }
       
       return await apiClient.postFormData<ProductDTO>(
-        API_ENDPOINTS.PRODUCTS.CREATE,
+        API_ENDPOINTS.PRODUCTS,
         formData
       );
     } catch (error) {
@@ -26,10 +26,10 @@ export class ProductsService {
     }
   }
 
-  static async editProduct(productId: number, editData: ProductEdit): Promise<ProductDTO> {
+  static async editProduct(productId: number, editData: Partial<ProductDTO>): Promise<ProductDTO> {
     try {
       return await apiClient.put<ProductDTO>(
-        `${API_ENDPOINTS.PRODUCTS.EDIT}?productId=${productId}`,
+        `${API_ENDPOINTS.PRODUCTS}?productId=${productId}`,
         editData
       );
     } catch (error) {
@@ -40,7 +40,7 @@ export class ProductsService {
 
   static async getAllProducts(): Promise<ProductDTO[]> {
     try {
-      return await apiClient.get<ProductDTO[]>(API_ENDPOINTS.PRODUCTS.GET_ALL);
+      return await apiClient.get<ProductDTO[]>(API_ENDPOINTS.PRODUCTS);
     } catch (error) {
       console.error('Failed to fetch products:', error);
       throw new Error('Failed to fetch products. Please try again.');
@@ -50,7 +50,7 @@ export class ProductsService {
   static async getProductById(productId: number): Promise<ProductDTO> {
     try {
       return await apiClient.get<ProductDTO>(
-        `${API_ENDPOINTS.PRODUCTS.GET_BY_ID}?productId=${productId}`
+        `${API_ENDPOINTS.PRODUCTS}?productId=${productId}`
       );
     } catch (error) {
       console.error('Failed to fetch product:', error);
@@ -61,7 +61,7 @@ export class ProductsService {
   static async deleteProduct(productId: number): Promise<string> {
     try {
       return await apiClient.delete<string>(
-        `${API_ENDPOINTS.PRODUCTS.DELETE}?productId=${productId}`
+        `${API_ENDPOINTS.PRODUCTS}?productId=${productId}`
       );
     } catch (error) {
       console.error('Failed to delete product:', error);

@@ -2,195 +2,169 @@
 import Navbar from '@/components/Navbar';
 import Image from 'next/image';
 import React, { useState, useRef, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+
+const mapElementsData = [
+  {
+    id: 'home',
+    x: 0,
+    y: 0,
+    title: 'Bienvenido a Deli Chicharrones',
+    description: 'Los chicharrones más crujientes y sabrosos, preparados como en casa.',
+    bgClass: 'bg-white/90 backdrop-blur-sm',
+    textClass: 'text-gray-800',
+  },
+  {
+    id: 'about',
+    x: -460,
+    y: -460,
+    title: 'Sobre Nosotros',
+    description: 'Somos un negocio familiar donde cada plato se prepara con cariño y tradición.',
+    bgClass: 'bg-gradient-to-br from-purple-500 to-pink-500',
+    textClass: 'text-white',
+    image: '/sobre_nosotros.jpeg',
+  },
+  {
+    id: 'contact',
+    x: -600,
+    y: 200,
+    title: 'Contacto',
+    bgClass: 'bg-gradient-to-br from-orange-500 to-red-500',
+    textClass: 'text-white',
+    contacts: [
+      { icon: '📧', text: 'delichicharronespr@gmail.com' },
+      { icon: '📱', text: '+57 (323) 479-8248' },
+      { icon: '📍', text: 'Planeta Rica, Córdoba, Colombia' },
+    ],
+  },
+];
+
+const socialLinks = [
+  { name: 'Facebook', icon: 'f', bgClass: 'bg-blue-600 hover:bg-blue-700' },
+  { name: 'Instagram', icon: '📷', bgClass: 'bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90' },
+  { name: 'WhatsApp', icon: '/icons8-whatsapp-48.png', bgClass: 'bg-blue-400 hover:bg-blue-500', isImage: true },
+];
 
 export default function Home() {
+  const { logout, isAuthenticated } = useAuth();
   const [isDragging, setIsDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
-  const [hoveredElement, setHoveredElement] = useState("");
   const containerRef = useRef(null);
 
-  // Definir elementos en diferentes ubicaciones del mapa 2D
-  const mapElements = [
-    {
-      id: 'home',
-      type: 'home',
-      x: 0,
-      y: 0,
-      title: 'Inicio',
-      content: (
-        <div className="bg-white/90 backdrop-blur-sm rounded-xl p-6 shadow-2xl max-w-md">
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">¡Bienvenido!</h2>
-          <p className="text-gray-600 mb-4">
-            Aquí encontrarás los chicharrones más crujientes y sabrosos, preparados como en casa. <br />
-            Te invitamos a probar nuestra especialidad y vivir una experiencia única de sabor.
-          </p>
-          <div className="flex gap-2">
-            <div className="w-3 h-3 bg-amber-600 rounded-full animate-pulse"></div>
-            <div className="w-3 h-3 bg-orange-600 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+  // Limpiar cualquier sesión existente al cargar la página principal
+  useEffect(() => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user_data');
+  }, []);
+
+  // Nota: Redirección automática eliminada para permitir acceso libre a la página principal
+  
+  // Función para limpiar la sesión si existe
+  const clearSession = () => {
+    logout();
+    // También limpiar manualmente cualquier dato residual
+    localStorage.clear();
+    window.location.reload();
+  };
+
+  // Función para renderizar el contenido de cada elemento
+  const renderMapElement = (element: typeof mapElementsData[0]) => {
+    switch (element.id) {
+      case 'home':
+        return (
+          <div className={`${element.bgClass} rounded-xl p-4 sm:p-6 shadow-2xl max-w-xs sm:max-w-md`}>
+            <h2 className={`text-xl sm:text-3xl font-bold ${element.textClass} mb-4`}>¡Bienvenido!</h2>
+            <p className={`${element.textClass} mb-4 text-sm sm:text-base opacity-80`}>
+              {element.description}
+            </p>
+            <div className="flex gap-2 justify-center">
+              {[0.2, 0.4, 0.6].map((delay, i) => (
+                <div 
+                  key={i}
+                  className={`w-3 h-3 ${['bg-amber-600', 'bg-orange-600', 'bg-red-500'][i]} rounded-full animate-pulse`}
+                  style={{ animationDelay: `${delay}s` }}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      )
-    },
-    {
-      id: 'about',
-      type: 'about',
-      x: -460,
-      y: -460,
-      title: 'Sobre Mí',
-      content: (
-        <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl p-6 shadow-2xl max-w-md text-white">
-          <h2 className="text-3xl font-bold mb-4">👋 Sobre Nosotros</h2>
-          <p className="mb-4">
-            Nuestra historia comenzó en casa, con mamá perfeccionando la receta familiar de chicharrones que ahora queremos compartir contigo. <br />
-            Somos un negocio familiar donde cada plato se prepara con cariño y la tradición que solo una madre puede transmitir.
-          </p>
-          <div className="flex justify-center gap-4 text-sm">
-            <Image
-              alt='sobre_nosotros'
-              src='/sobre_nosotros.jpeg'
-              width={300}
-              height={300}
-              className='rounded-md object-cover'
-            />
-          </div>
-        </div>
-      )
-    },
-    {
-      id: 'social',
-      type: 'social',
-      x: 500,
-      y: -200,
-      title: 'Redes Sociales',
-      content: (
-        <div className="bg-gray-900 rounded-xl p-6 shadow-2xl max-w-md text-white">
-          <h2 className="text-2xl font-bold mb-4">📱 Síguenos</h2>
-          <div className="space-y-3">
-            <a href="#" className="flex items-center gap-3 bg-blue-600 rounded-lg p-3 hover:bg-blue-700 transition-colors">
-              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-blue-600 font-bold">f</div>
-              <span>Facebook</span>
-            </a>
-            <a href="#" className="flex items-center gap-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg p-3 hover:opacity-90 transition-opacity">
-              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-purple-600 font-bold">📷</div>
-              <span>Instagram</span>
-            </a>
-            <a href="#" className="flex items-center gap-3 bg-blue-400 rounded-lg p-3 hover:bg-blue-500 transition-colors">
-              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+        );
+      
+      case 'about':
+        return (
+          <div className={`${element.bgClass} rounded-xl p-4 sm:p-6 shadow-2xl max-w-xs sm:max-w-md ${element.textClass}`}>
+            <h2 className="text-xl sm:text-3xl font-bold mb-4">👋 {element.title}</h2>
+            <p className="mb-4 text-sm sm:text-base">{element.description}</p>
+            {element.image && (
+              <div className="flex justify-center">
                 <Image
-                  alt='whatsapp image'
-                  src='/icons8-whatsapp-48.png'
-                  width={48}
-                  height={48}
+                  alt={element.title}
+                  src={element.image}
+                  width={250}
+                  height={200}
+                  className="rounded-md object-cover w-full max-w-[250px]"
                 />
               </div>
-              <span>Whatsapp</span>
-            </a>
+            )}
           </div>
-        </div>
-      )
-    },
-    {
-      id: 'projects',
-      type: 'projects',
-      x: 300,
-      y: 400,
-      title: 'Proyectos',
-      content: (
-        <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-6 shadow-2xl max-w-md text-white">
-          <h2 className="text-3xl font-bold mb-4">🍴 Menú</h2>
-          <div className="space-y-4">
-            <div className="bg-white/20 rounded-lg p-4">
-              <h3 className="font-bold text-lg">App E-commerce</h3>
-              <p className="text-sm opacity-90 mb-2">Plataforma completa con React y Node.js</p>
-              <div className="flex gap-2">
-                <span className="bg-white/30 px-2 py-1 rounded text-xs">React</span>
-                <span className="bg-white/30 px-2 py-1 rounded text-xs">Node.js</span>
-              </div>
+        );
+      
+      case 'contact':
+        return (
+          <div className={`${element.bgClass} rounded-xl p-4 sm:p-6 shadow-2xl max-w-xs sm:max-w-md ${element.textClass}`}>
+            <h2 className="text-xl sm:text-3xl font-bold mb-4">� {element.title}</h2>
+            <div className="space-y-2 sm:space-y-3">
+              {element.contacts?.map((contact, index) => (
+                <div key={index} className="flex items-center gap-3 bg-white/20 rounded-lg p-2 sm:p-3">
+                  <span className="text-lg">{contact.icon}</span>
+                  <span className="text-xs sm:text-sm break-all">{contact.text}</span>
+                </div>
+              ))}
             </div>
-            <div className="bg-white/20 rounded-lg p-4">
-              <h3 className="font-bold text-lg">Dashboard Analytics</h3>
-              <p className="text-sm opacity-90 mb-2">Visualización de datos en tiempo real</p>
-              <div className="flex gap-2">
-                <span className="bg-white/30 px-2 py-1 rounded text-xs">Vue.js</span>
-                <span className="bg-white/30 px-2 py-1 rounded text-xs">D3.js</span>
-              </div>
-            </div>
+            <button className="w-full bg-white text-orange-500 font-bold py-2 sm:py-3 rounded-lg mt-4 hover:bg-gray-100 transition-colors text-sm sm:text-base">
+              Enviar Mensaje
+            </button>
           </div>
-        </div>
-      )
-    },
-    {
-      id: 'contact',
-      type: 'contact',
-      x: -600,
-      y: 200,
-      title: 'Contacto',
-      content: (
-        <div className="bg-gradient-to-br from-orange-500 to-red-500 rounded-xl p-6 shadow-2xl max-w-md text-white">
-          <h2 className="text-3xl font-bold mb-4">📬 Contacto</h2>
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 bg-white/20 rounded-lg p-3">
-              <span>📧</span>
-              <span>delichicharronespr@gmail.com</span>
-            </div>
-            <div className="flex items-center gap-3 bg-white/20 rounded-lg p-3">
-              <span>📱</span>
-              <span>+57 (323) 479-8248</span>
-            </div>
-            <div className="flex items-center gap-3 bg-white/20 rounded-lg p-3">
-              <span>📍</span>
-              <span>Planeta Rica, Córdoba, Colombia</span>
-            </div>
-          </div>
-          <button className="w-full bg-white text-orange-500 font-bold py-3 rounded-lg mt-4 hover:bg-gray-100 transition-colors">
-            Enviar Mensaje
-          </button>
-        </div>
-      )
-    },
-    {
-      id: 'skills',
-      type: 'skills',
-      x: -200,
-      y: 500,
-      title: 'Habilidades',
-      content: (
-        <div className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl p-6 shadow-2xl max-w-md text-white">
-          <h2 className="text-3xl font-bold mb-4">✍ Receta</h2>
-          <div className="space-y-3">
-            <div className="bg-white/20 rounded-lg p-3">
-              <div className="flex justify-between mb-2">
-                <span>Amor 🧡</span>
-                <span>90%</span>
-              </div>
-              <div className="w-full bg-white/20 rounded-full h-2">
-                <div className="bg-white h-2 rounded-full" style={{ width: '90%' }}></div>
-              </div>
-            </div>
-            <div className="bg-white/20 rounded-lg p-3">
-              <div className="flex justify-between mb-2">
-                <span>Pasión 😋</span>
-                <span>85%</span>
-              </div>
-              <div className="w-full bg-white/20 rounded-full h-2">
-                <div className="bg-white h-2 rounded-full" style={{ width: '85%' }}></div>
-              </div>
-            </div>
-            <div className="bg-white/20 rounded-lg p-3">
-              <div className="flex justify-between mb-2">
-                <span>Familia 🙌</span>
-                <span>80%</span>
-              </div>
-              <div className="w-full bg-white/20 rounded-full h-2">
-                <div className="bg-white h-2 rounded-full" style={{ width: '80%' }}></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )
+        );
+      
+      default:
+        return null;
     }
+  };
+
+  // Elementos adicionales del mapa
+  const socialElement = {
+    id: 'social',
+    x: 500,
+    y: -200,
+    content: (
+      <div className="bg-gray-900 rounded-xl p-4 sm:p-6 shadow-2xl max-w-xs sm:max-w-md text-white">
+        <h2 className="text-lg sm:text-2xl font-bold mb-4">� Síguenos</h2>
+        <div className="space-y-2 sm:space-y-3">
+          {socialLinks.map((social, index) => (
+            <a key={index} href="#" className={`flex items-center gap-3 ${social.bgClass} rounded-lg p-2 sm:p-3 transition-all`}>
+              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white rounded-lg flex items-center justify-center">
+                {social.isImage ? (
+                  <Image alt={social.name} src={social.icon} width={24} height={24} />
+                ) : (
+                  <span className="text-blue-600 font-bold text-sm sm:text-base">{social.icon}</span>
+                )}
+              </div>
+              <span className="text-sm sm:text-base">{social.name}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    )
+  };
+
+  // Combinar todos los elementos del mapa
+  const mapElements = [
+    ...mapElementsData.map(element => ({
+      ...element,
+      content: renderMapElement(element)
+    })),
+    socialElement
   ];
 
   const getEventCoordinates = (e: MouseEvent | TouchEvent | React.MouseEvent | React.TouchEvent): { x: number, y: number } => {
@@ -311,8 +285,9 @@ export default function Home() {
   return (
     <div
       ref={containerRef}
-      className={`font-sans min-h-screen relative bg-gradient-to-br from-amber-300 to-amber-300 overflow-hidden select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'
-        }`}
+      className={`font-sans min-h-screen relative bg-gradient-to-br from-amber-300 to-amber-400 overflow-hidden select-none ${
+        isDragging ? 'cursor-grabbing' : 'cursor-grab'
+      }`}
       onMouseDown={handleReactMouseDown}
       onTouchStart={handleReactTouchStart}
       style={{
@@ -346,8 +321,7 @@ export default function Home() {
               top: '50%',
               transform: `translate(calc(-50% + ${element.x + offset.x}px), calc(-50% + ${element.y + offset.y}px))`,
             }}
-            onMouseEnter={() => setHoveredElement(element.id)}
-            onMouseLeave={() => setHoveredElement("")}
+
           >
             {element.content}
           </div>
@@ -356,11 +330,28 @@ export default function Home() {
 
       <Navbar/>
 
-      {/* Instrucciones */}
-      <div className="fixed bottom-6 left-6 bg-black/30 backdrop-blur-sm rounded-lg p-4 text-white z-20 pointer-events-auto">
-        <div className="text-sm space-y-1">
-          <div>🖱️ Arrastra para explorar</div>
-          <div>🎯 Situate sobre elementos para destacar</div>
+      {/* Instrucciones responsive */}
+      <div className="fixed bottom-4 sm:bottom-6 left-4 sm:left-6 bg-black/30 backdrop-blur-sm rounded-lg p-2 sm:p-4 text-white z-20 pointer-events-auto max-w-[calc(100vw-2rem)] sm:max-w-none">
+        <div className="text-xs sm:text-sm space-y-1">
+          <div className="flex items-center gap-1">
+            <span>🖱️</span>
+            <span className="hidden sm:inline">Arrastra para explorar</span>
+            <span className="sm:hidden">Arrastra</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span>🎯</span>
+            <span className="hidden sm:inline">Sitúate sobre elementos</span>
+            <span className="sm:hidden">Toca elementos</span>
+          </div>
+          <div className="hidden sm:block">🔒 Página principal - Haz clic en "Iniciar Sesión"</div>
+          {isAuthenticated && (
+            <button 
+              onClick={clearSession}
+              className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs mt-2"
+            >
+              🚪 Limpiar sesión activa
+            </button>
+          )}
         </div>
       </div>
 

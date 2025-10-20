@@ -1,6 +1,7 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -9,73 +10,68 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Loader2, Trash2 } from 'lucide-react';
 import { UsersService } from '@/services/users.service';
 import { UserDTO } from '@/types/api';
 import { toast } from 'sonner';
+import { Loader2, AlertTriangle, User } from 'lucide-react';
 
 interface DeleteUserModalProps {
-  user: UserDTO;
+  user: UserDTO | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onUserDeleted: () => void;
 }
 
-export default function DeleteUserModal({
-  user,
-  open,
-  onOpenChange,
-  onUserDeleted,
-}: DeleteUserModalProps) {
+export default function DeleteUserModal({ user, open, onOpenChange, onUserDeleted }: DeleteUserModalProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleDelete = async () => {
-    if (!user.id) return;
-
-    setIsLoading(true);
+    if (!user?.id) return;
 
     try {
+      setIsLoading(true);
       await UsersService.deleteUser(user.id);
+      toast.success('Usuario eliminado exitosamente');
       onUserDeleted();
       onOpenChange(false);
     } catch (error) {
       console.error('Error deleting user:', error);
-      toast.error(
-        error instanceof Error ? error.message : 'Error al eliminar el usuario'
-      );
+      toast.error('Error al eliminar el usuario');
     } finally {
       setIsLoading(false);
     }
   };
 
+  if (!user) return null;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Trash2 className="h-5 w-5 text-destructive" />
-            Confirmar Eliminación
+          <DialogTitle className="flex items-center gap-2 text-destructive">
+            <AlertTriangle className="h-5 w-5" />
+            Eliminar Usuario
           </DialogTitle>
           <DialogDescription>
-            Esta acción no se puede deshacer. Se eliminará permanentemente el usuario y
-            todos sus datos del sistema.
+            Esta acciÃ³n no se puede deshacer. El usuario serÃ¡ eliminado permanentemente.
           </DialogDescription>
         </DialogHeader>
-
-        <div className="py-4">
-          <div className="bg-muted rounded-lg p-4">
-            <h4 className="font-semibold mb-2">Usuario a eliminar:</h4>
-            <div className="space-y-1 text-sm">
-              <p><span className="font-medium">Usuario:</span> {user.userName}</p>
-              <p><span className="font-medium">Nombre:</span> {user.fullName}</p>
-              <p><span className="font-medium">Email:</span> {user.email}</p>
-              <p><span className="font-medium">Rol:</span> {user.role}</p>
-            </div>
+        
+        <div className="flex items-center gap-3 p-4 border rounded-lg bg-muted/50">
+          <div className="flex-shrink-0">
+            <User className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <div className="flex-1">
+            <p className="font-medium">{user.fullName}</p>
+            <p className="text-sm text-muted-foreground">@{user.userName}</p>
+            <p className="text-sm text-muted-foreground">{user.email}</p>
+            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary mt-1">
+              {user.role === 'admin' ? 'Administrador' : 'Usuario'}
+            </span>
           </div>
         </div>
 
-        <DialogFooter className="gap-2">
+        <DialogFooter>
           <Button
             type="button"
             variant="outline"
@@ -85,22 +81,12 @@ export default function DeleteUserModal({
             Cancelar
           </Button>
           <Button
-            type="button"
             variant="destructive"
             onClick={handleDelete}
             disabled={isLoading}
           >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Eliminando...
-              </>
-            ) : (
-              <>
-                <Trash2 className="mr-2 h-4 w-4" />
-                Eliminar Usuario
-              </>
-            )}
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Eliminar Usuario
           </Button>
         </DialogFooter>
       </DialogContent>

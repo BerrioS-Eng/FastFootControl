@@ -1,5 +1,10 @@
-// Types based on Backend DTOs
+// Optimized API Types - Simplified and consolidated
 
+// Base types
+export type UserRole = 'admin' | 'trabajador';
+export type UserStatus = 'activo' | 'inactivo' | 'descanso';
+
+// Authentication
 export interface LoginRequest {
   userName: string;
   password: string;
@@ -11,17 +16,24 @@ export interface LoginResponse {
   message: string;
 }
 
+// User Management
 export interface UserDTO {
   id?: number;
   userName: string;
   password?: string;
   email: string;
   fullName: string;
-  role: string;
+  role: UserRole;
+  status?: UserStatus;
+  area?: string;
+  photo?: string;
+  lastAccess?: Date;
+  availability?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
+// Product Management
 export interface ProductDTO {
   id?: number;
   name: string;
@@ -34,21 +46,20 @@ export interface ProductDTO {
   updatedAt?: Date;
 }
 
-export interface ProductRequest {
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  availability: boolean;
+export interface ProductRequest extends Omit<ProductDTO, 'id' | 'imageUrl' | 'createdAt' | 'updatedAt'> {
   image?: File;
 }
 
-export interface ProductEdit {
-  name?: string;
-  description?: string;
-  price?: number;
-  category?: string;
-  availability?: boolean;
+// Sales Management
+export interface ProductQuantity {
+  productId: number;
+  quantity: number;
+  unitPrice: number;
+}
+
+export interface DirectCost {
+  description: string;
+  amount: number;
 }
 
 export interface SaleDTO {
@@ -68,32 +79,13 @@ export interface SaleRequest {
   directCosts: DirectCost[];
 }
 
-export interface ProductQuantity {
-  productId: number;
-  quantity: number;
-  unitPrice: number;
-}
-
-export interface DirectCost {
-  description: string;
-  amount: number;
-}
-
-export interface Ingredient {
-  id?: number;
-  name: string;
-  unitCost: number;
-  unit: string;
-}
-
-// API Response wrapper
+// Utilities
 export interface ApiResponse<T> {
   data: T;
   message?: string;
   success: boolean;
 }
 
-// Common props for forms
 export interface FormProps<T> {
   initialData?: T;
   onSubmit: (data: T) => void | Promise<void>;

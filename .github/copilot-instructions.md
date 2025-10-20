@@ -68,11 +68,17 @@ El sistema está completamente configurado y funcionando:
 - ✅ Servidor de desarrollo ejecutándose en http://localhost:3000
 - ✅ APIs REST implementadas con Next.js API Routes
 - ✅ Base de datos PostgreSQL configurada
-- ✅ Autenticación JWT implementada
+- ⚠️ **Autenticación JWT DESACTIVADA TEMPORALMENTE** (ver BACKUP_AUTH_CONFIG.md)
 - ✅ Hash de contraseñas con bcryptjs
 - ✅ Todos los servicios de API implementados
 - ✅ Tipos TypeScript definidos
 - ✅ Scripts de inicialización de BD disponibles
+
+### 🔓 **Autenticación DESACTIVADA**
+- **Estado**: Temporalmente desactivada para desarrollo
+- **Acceso**: Directo al dashboard sin login
+- **Configuración original**: Guardada en `BACKUP_AUTH_CONFIG.md`
+- **Reactivar**: Seguir instrucciones en el archivo de respaldo
 
 ### 🎉 **Funcionalidades Implementadas:**
 

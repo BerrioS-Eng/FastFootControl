@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -53,6 +53,7 @@ export default function EditUserModal({
   });
 
   const selectedRole = watch('role');
+  const selectedArea = watch('area');
 
   useEffect(() => {
     if (user && open) {
@@ -61,6 +62,7 @@ export default function EditUserModal({
         email: user.email,
         fullName: user.fullName,
         role: user.role,
+        area: user.area || '',
         password: '', // Always empty for security
       });
     }
@@ -157,21 +159,40 @@ export default function EditUserModal({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="role">Rol</Label>
-              <Select value={selectedRole} onValueChange={(value) => setValue('role', value)}>
-                <SelectTrigger className={errors.role ? 'border-red-500' : ''}>
-                  <SelectValue />
+              <Label htmlFor="area">Área</Label>
+              <Select value={selectedArea} onValueChange={(value) => setValue('area', value)}>
+                <SelectTrigger className={errors.area ? 'border-red-500' : ''}>
+                  <SelectValue placeholder="Seleccionar área" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin">Administrador</SelectItem>
-                  <SelectItem value="manager">Gerente</SelectItem>
-                  <SelectItem value="employee">Empleado</SelectItem>
+                  <SelectItem value="cocina">Cocina</SelectItem>
+                  <SelectItem value="caja">Caja</SelectItem>
+                  <SelectItem value="servicio">Servicio al Cliente</SelectItem>
+                  <SelectItem value="limpieza">Limpieza</SelectItem>
+                  <SelectItem value="administracion">Administración</SelectItem>
+                  <SelectItem value="seguridad">Seguridad</SelectItem>
                 </SelectContent>
               </Select>
-              {errors.role && (
-                <p className="text-sm text-red-500">{errors.role.message}</p>
+              {errors.area && (
+                <p className="text-sm text-red-500">{errors.area.message}</p>
               )}
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="role">Rol</Label>
+            <Select value={selectedRole} onValueChange={(value) => setValue('role', value)}>
+              <SelectTrigger className={errors.role ? 'border-red-500' : ''}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="admin">Administrador</SelectItem>
+                <SelectItem value="trabajador">Trabajador</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.role && (
+              <p className="text-sm text-red-500">{errors.role.message}</p>
+            )}
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
