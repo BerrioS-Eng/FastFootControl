@@ -26,11 +26,11 @@ export default function DeleteUserModal({ user, open, onOpenChange, onUserDelete
   const [isLoading, setIsLoading] = useState(false);
 
   const handleDelete = async () => {
-    if (!user?.id) return;
+    if (!user?.userId) return;
 
     try {
       setIsLoading(true);
-      await UsersService.deleteUser(user.id);
+      await UsersService.deleteUser(user.userId);
       toast.success('Usuario eliminado exitosamente');
       onUserDeleted();
       onOpenChange(false);
@@ -62,9 +62,7 @@ export default function DeleteUserModal({ user, open, onOpenChange, onUserDelete
             <User className="h-8 w-8 text-muted-foreground" />
           </div>
           <div className="flex-1">
-            <p className="font-medium">{user.fullName}</p>
             <p className="text-sm text-muted-foreground">@{user.userName}</p>
-            <p className="text-sm text-muted-foreground">{user.email}</p>
             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary mt-1">
               {user.role === 'admin' ? 'Administrador' : 'Usuario'}
             </span>

@@ -59,17 +59,14 @@ export default function EditUserModal({
     if (user && open) {
       reset({
         userName: user.userName,
-        email: user.email,
-        fullName: user.fullName,
         role: user.role,
-        area: user.area || '',
         password: '', // Always empty for security
       });
     }
   }, [user, open, reset]);
 
   const onSubmit = async (data: UserEditFormData) => {
-    if (!user.id) return;
+    if (!user.userId) return;
 
     setIsLoading(true);
 
@@ -80,7 +77,7 @@ export default function EditUserModal({
         delete updateData.password;
       }
 
-      await UsersService.editUser(user.id, updateData as UserDTO);
+      await UsersService.editUser(user.userId, updateData as UserDTO);
       onUserUpdated();
       onOpenChange(false);
     } catch (error) {
@@ -106,7 +103,7 @@ export default function EditUserModal({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="userName">Usuario</Label>
+              <Label htmlFor="userName">Nombre del usuario</Label>
               <Input
                 id="userName"
                 {...register('userName')}
@@ -116,31 +113,6 @@ export default function EditUserModal({
                 <p className="text-sm text-red-500">{errors.userName.message}</p>
               )}
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="fullName">Nombre Completo</Label>
-              <Input
-                id="fullName"
-                {...register('fullName')}
-                className={errors.fullName ? 'border-red-500' : ''}
-              />
-              {errors.fullName && (
-                <p className="text-sm text-red-500">{errors.fullName.message}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              {...register('email')}
-              className={errors.email ? 'border-red-500' : ''}
-            />
-            {errors.email && (
-              <p className="text-sm text-red-500">{errors.email.message}</p>
-            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -157,26 +129,6 @@ export default function EditUserModal({
                 <p className="text-sm text-red-500">{errors.password.message}</p>
               )}
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="area">Área</Label>
-              <Select value={selectedArea} onValueChange={(value) => setValue('area', value)}>
-                <SelectTrigger className={errors.area ? 'border-red-500' : ''}>
-                  <SelectValue placeholder="Seleccionar área" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="cocina">Cocina</SelectItem>
-                  <SelectItem value="caja">Caja</SelectItem>
-                  <SelectItem value="servicio">Servicio al Cliente</SelectItem>
-                  <SelectItem value="limpieza">Limpieza</SelectItem>
-                  <SelectItem value="administracion">Administración</SelectItem>
-                  <SelectItem value="seguridad">Seguridad</SelectItem>
-                </SelectContent>
-              </Select>
-              {errors.area && (
-                <p className="text-sm text-red-500">{errors.area.message}</p>
-              )}
-            </div>
           </div>
 
           <div className="space-y-2">
@@ -186,8 +138,8 @@ export default function EditUserModal({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="admin">Administrador</SelectItem>
-                <SelectItem value="trabajador">Trabajador</SelectItem>
+                <SelectItem value="ADMIN">Administrador</SelectItem>
+                <SelectItem value="WORKER">Trabajador</SelectItem>
               </SelectContent>
             </Select>
             {errors.role && (

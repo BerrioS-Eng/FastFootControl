@@ -47,35 +47,16 @@ export default function UserCard({ user, onEdit, onDelete }: UserCardProps) {
 
   const getRoleBadge = (role: string) => {
     const configs = {
-      admin: { color: 'bg-red-100 text-red-800 hover:bg-red-200', label: 'Administrador' },
-      trabajador: { color: 'bg-blue-100 text-blue-800 hover:bg-blue-200', label: 'Trabajador' }
+      ADMIN: { color: 'bg-red-100 text-red-800 hover:bg-red-200', label: 'Administrador' },
+      WORKER: { color: 'bg-blue-100 text-blue-800 hover:bg-blue-200', label: 'Trabajador' }
     };
     
-    const config = configs[role as keyof typeof configs] || configs.trabajador;
+    const config = configs[role as keyof typeof configs] || configs.WORKER;
     
     return (
       <Badge className={config.color}>
         {getRoleIcon(role)}
         <span className="ml-1">{config.label}</span>
-      </Badge>
-    );
-  };
-
-  const getStatusBadge = (status?: string) => {
-    if (!status) return null;
-    
-    const configs = {
-      activo: { color: 'bg-green-100 text-green-800', label: 'Activo' },
-      inactivo: { color: 'bg-gray-100 text-gray-800', label: 'Inactivo' },
-      descanso: { color: 'bg-yellow-100 text-yellow-800', label: 'En Descanso' }
-    };
-    
-    const config = configs[status as keyof typeof configs];
-    if (!config) return null;
-    
-    return (
-      <Badge variant="outline" className={config.color}>
-        {config.label}
       </Badge>
     );
   };
@@ -90,24 +71,6 @@ export default function UserCard({ user, onEdit, onDelete }: UserCardProps) {
       .slice(0, 2);
   };
 
-  const formatLastAccess = (lastAccess?: Date) => {
-    if (!lastAccess) return 'Nunca';
-    
-    const now = new Date();
-    const access = new Date(lastAccess);
-    const diffTime = Math.abs(now.getTime() - access.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 1) return 'Hoy';
-    if (diffDays === 2) return 'Ayer';
-    if (diffDays <= 7) return `Hace ${diffDays} días`;
-    
-    return access.toLocaleDateString('es-ES', {
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
   return (
     <Card 
       className={`transition-all duration-200 hover:shadow-lg ${
@@ -120,17 +83,13 @@ export default function UserCard({ user, onEdit, onDelete }: UserCardProps) {
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-3">
             <Avatar className="h-12 w-12 border-2 border-orange-200">
-              <AvatarImage src={user.photo} alt={user.fullName} />
               <AvatarFallback className="bg-orange-100 text-orange-800 font-semibold">
-                {getInitials(user.fullName)}
+                {getInitials(user.userName)}
               </AvatarFallback>
             </Avatar>
             <div>
-              <h3 className="font-semibold text-lg text-gray-900">{user.fullName}</h3>
+              <h3 className="font-semibold text-lg text-gray-900">{user.userName}</h3>
               <p className="text-sm text-gray-600">@{user.userName}</p>
-              {user.email && (
-                <p className="text-xs text-gray-500">{user.email}</p>
-              )}
             </div>
           </div>
           <DropdownMenu>
@@ -160,29 +119,6 @@ export default function UserCard({ user, onEdit, onDelete }: UserCardProps) {
         {/* Role and Status */}
         <div className="flex flex-wrap gap-2">
           {getRoleBadge(user.role)}
-          {getStatusBadge(user.status)}
-        </div>
-        
-        {/* Area */}
-        {user.area && (
-          <div className="flex items-center text-sm text-gray-600">
-            <Utensils className="h-4 w-4 mr-2 text-gray-400" />
-            <span className="font-medium">Área:</span>
-            <span className="ml-1">{user.area}</span>
-          </div>
-        )}
-        
-        {/* Last Access */}
-        <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-orange-100">
-          <span>Último acceso: {formatLastAccess(user.lastAccess)}</span>
-          {user.createdAt && (
-            <span>
-              Desde {new Date(user.createdAt).toLocaleDateString('es-ES', { 
-                month: 'short', 
-                year: '2-digit' 
-              })}
-            </span>
-          )}
         </div>
       </CardContent>
     </Card>

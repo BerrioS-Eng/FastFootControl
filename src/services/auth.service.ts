@@ -7,7 +7,7 @@ export class AuthService {
     try {
       // Transform userName to username for API compatibility
       const apiCredentials = {
-        username: credentials.userName,
+        userName: credentials.userName,
         password: credentials.password
       };
 

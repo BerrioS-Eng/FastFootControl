@@ -1,9 +1,5 @@
 // Optimized API Types - Simplified and consolidated
 
-// Base types
-export type UserRole = 'admin' | 'trabajador';
-export type UserStatus = 'activo' | 'inactivo' | 'descanso';
-
 // Authentication
 export interface LoginRequest {
   userName: string;
@@ -18,19 +14,10 @@ export interface LoginResponse {
 
 // User Management
 export interface UserDTO {
-  id?: number;
+  userId?: number;
   userName: string;
   password?: string;
-  email: string;
-  fullName: string;
-  role: UserRole;
-  status?: UserStatus;
-  area?: string;
-  photo?: string;
-  lastAccess?: Date;
-  availability?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  role: string;
 }
 
 // Product Management

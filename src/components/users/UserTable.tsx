@@ -79,9 +79,7 @@ export default function UserTable({ className }: UserTableProps) {
   const filteredUsers = useMemo(() => {
     return users.filter(user => {
       const matchesSearch = 
-        user.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email?.toLowerCase().includes(searchTerm.toLowerCase());
+        user.userName?.toLowerCase().includes(searchTerm.toLowerCase())
       
       const matchesRole = roleFilter === 'all' || user.role === roleFilter;
       
@@ -122,8 +120,8 @@ export default function UserTable({ className }: UserTableProps) {
 
   const statistics = {
     total: users.length,
-    admins: users.filter(user => user.role === 'admin').length,
-    trabajadores: users.filter(user => user.role === 'trabajador').length,
+    admins: users.filter(user => user.role === 'ADMIN').length,
+    trabajadores: users.filter(user => user.role === 'WORKER').length,
   };
 
   if (isLoading) {
@@ -205,9 +203,7 @@ export default function UserTable({ className }: UserTableProps) {
           <TableHeader>
             <TableRow>
               <TableHead>Usuario</TableHead>
-              <TableHead>Email</TableHead>
               <TableHead>Rol</TableHead>
-              <TableHead>Fecha de CreaciÃ³n</TableHead>
               <TableHead className="text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
@@ -228,25 +224,14 @@ export default function UserTable({ className }: UserTableProps) {
               </TableRow>
             ) : (
               filteredUsers.map((user) => (
-                <TableRow key={user.id}>
+                <TableRow key={user.userId}>
                   <TableCell>
                     <div>
-                      <div className="font-medium">{user.fullName}</div>
+                      <div className="font-medium">{user.userName}</div>
                       <div className="text-sm text-muted-foreground">@{user.userName}</div>
                     </div>
                   </TableCell>
-                  <TableCell>{user.email}</TableCell>
                   <TableCell>{getRoleBadge(user.role || 'user')}</TableCell>
-                  <TableCell>
-                    {user.createdAt 
-                      ? new Date(user.createdAt).toLocaleDateString('es-ES', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric'
-                        })
-                      : 'N/A'
-                    }
-                  </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
