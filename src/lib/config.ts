@@ -7,4 +7,5 @@ export const API_BASE_URL = "https://fast-food-back-uh35.onrender.com";
 export const ENDPOINTS = {
     products: `${API_BASE_URL}/products`,
     sales: `${API_BASE_URL}/sales`,
+    reports: `${API_BASE_URL}/reports`,
 } as const;

@@ -3,7 +3,7 @@ import React from 'react'
 const Panel = () => {
     return (
         <>
-            <h1>Analytics Module</h1>
+            <h1>Reports Module</h1>
         </>
     )
 }
