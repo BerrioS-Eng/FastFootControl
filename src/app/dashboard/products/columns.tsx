@@ -11,12 +11,12 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import DeleteProduct from "@/components/products/DeleteProduct";
+import DeleteProduct from "./components/DeleteProduct";
 import { Product } from "./types";
 
-export const columns: ColumnDef<Product>[] = [
+export const columns = ({ onEdit }: { onEdit: (id: number) => void }): ColumnDef<Product>[] => [
     {
-        accessorKey: "productName",
+        accessorKey: "name",
         header: "Nombre producto",
     },
     {
@@ -37,6 +37,7 @@ export const columns: ColumnDef<Product>[] = [
             const product = row.original;
             const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
+
             return (
                 <>
                     <DropdownMenu>
@@ -49,12 +50,16 @@ export const columns: ColumnDef<Product>[] = [
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                             <DropdownMenuItem
-                                onClick={() => navigator.clipboard.writeText(product.productId)}
+                                onClick={() => navigator.clipboard.writeText(product.id.toString())}
                             >
                                 Copiar ID del producto
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>Editar Producto</DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => onEdit(product.id)}
+                            >
+                                Editar Producto
+                            </DropdownMenuItem>
                             <DropdownMenuItem
                                 variant="destructive"
                                 onClick={() => setIsDeleteDialogOpen(true)}
@@ -64,14 +69,14 @@ export const columns: ColumnDef<Product>[] = [
                         </DropdownMenuContent>
                     </DropdownMenu>
                     <DeleteProduct
-                        id={product.productId}
+                        id={product.id.toString()}
                         open={isDeleteDialogOpen}
                         onOpenChange={setIsDeleteDialogOpen}
                         onDeleteSuccess={() => {
-                            // Optionally trigger a data refresh here
-                            console.log(`Producto con ID ${product.productId} eliminado`);
+                            console.log(`Producto con ID ${product.id.toString()} eliminado`);
                         }}
                     />
+
                 </>
             );
         },

@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner"
+import {useDeleteProduct} from "@/app/dashboard/products/hooks/useDeleteProduct";
 
 interface DeleteProductProps {
     id: string;
@@ -20,26 +21,20 @@ interface DeleteProductProps {
 }
 
 const DeleteProduct: React.FC<DeleteProductProps> = ({ id, open, onOpenChange, onDeleteSuccess }) => {
-
+    const { mutateAsync, isPending } = useDeleteProduct();
     const handleDelete = async () => {
         try {
-            const response = await fetch(`/api/products/${id}`, {
-                method: 'DELETE',
-            });
-            if (!response.ok) {
-                throw new Error('Error al eliminar el producto');
+            const numericId = Number(id);
+            if (!Number.isFinite(numericId)) {
+                throw new Error('ID de producto inválido');
             }
-            toast("Exíto", {
-                description: `Producto con ID ${id} eliminado correctamente.`,
-            });
-            onDeleteSuccess?.(); 
-            onOpenChange(false); 
-        } catch (error) {
-            
-            toast("Error", {
-                description: "No se pudo eliminar el producto.",
-            });
-            console.error('Error:', error);
+            await mutateAsync(numericId);
+            toast("Éxito", { description: `Producto con ID ${id} eliminado correctamente.` });
+            onDeleteSuccess?.();
+            onOpenChange(false);
+        } catch (error: any) {
+            toast("Error", { description: error?.message || "No se pudo eliminar el producto." });
+            console.error('Error al eliminar:', error);
         }
     };
 
@@ -55,12 +50,10 @@ const DeleteProduct: React.FC<DeleteProductProps> = ({ id, open, onOpenChange, o
                 </DialogHeader>
                 <DialogFooter className="sm:justify-end gap-2">
                     <DialogClose asChild>
-                        <Button type="button" variant="secondary">
-                            Cancelar
-                        </Button>
+                        <Button type="button" variant="secondary" disabled={isPending}>Cancelar</Button>
                     </DialogClose>
-                    <Button type="button" variant="destructive" onClick={handleDelete}>
-                        Eliminar
+                    <Button type="button" variant="destructive" onClick={handleDelete} disabled={isPending}>
+                        {isPending ? 'Eliminando...' : 'Eliminar'}
                     </Button>
                 </DialogFooter>
             </DialogContent>

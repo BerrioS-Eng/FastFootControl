@@ -1,5 +1,5 @@
 'use client'
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/dashboard/Navbar';
 import Image from 'next/image';
 import React, { useState, useRef, useEffect } from 'react';
 

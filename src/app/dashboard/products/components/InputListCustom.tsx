@@ -1,8 +1,7 @@
 'use client';
-
-import { useEffect, useState } from 'react';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
+import {useEffect, useMemo, useState} from 'react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 interface Item {
     nombre: string;
@@ -10,23 +9,26 @@ interface Item {
 }
 
 interface InputListCustomProps {
-    value?: Item[],
-    onChange?: (item: Item[]) => void;
+    value?: Item[];
+    onChange?: (items: Item[]) => void;
 }
 
 export default function InputListCustom({ value = [], onChange }: InputListCustomProps) {
+    // Estados solo para los campos de entrada y edición, NO para la lista
     const [nombre, setNombre] = useState<string>('');
     const [precio, setPrecio] = useState<string>('');
-    const [items, setItems] = useState<Item[]>([]);
     const [editIndex, setEditIndex] = useState<number | null>(null);
     const [editValue, setEditValue] = useState<string>('');
 
+    // Usa siempre el valor controlado que viene de props
+    const items = useMemo(() => value ?? [], [value]);
+
     const addItem = () => {
-        if (nombre && precio) {
-            setItems([...items, { nombre, precio }]);
-            setNombre('');
-            setPrecio('');
-        }
+        if (!nombre || !precio) return;
+        const next = [...items, { nombre, precio }];
+        onChange?.(next);
+        setNombre('');
+        setPrecio('');
     };
 
     const handleEdit = (index: number, item: Item) => {
@@ -35,26 +37,28 @@ export default function InputListCustom({ value = [], onChange }: InputListCusto
     };
 
     const saveEdit = (index: number) => {
-        const newItems = [...items];
-        const [nombre, precio] = editValue.split(': $');
-        newItems[index] = { nombre: nombre.trim(), precio: precio.trim() };
-        setItems(newItems);
+        const [n, p] = editValue.split(': $');
+        const next = [...items];
+        next[index] = { nombre: (n ?? '').trim(), precio: (p ?? '').trim() };
+        onChange?.(next);
         setEditIndex(null);
         setEditValue('');
     };
 
     const deleteItem = (index: number) => {
-        const newItems = items.filter((_, i) => i !== index);
-        setItems(newItems);
+        const next = items.filter((_, i) => i !== index);
+        onChange?.(next);
     };
 
+    // Si el padre resetea el valor a [], limpia también los campos locales de entrada/edición
     useEffect(() => {
-        setItems(value);
-    }, []);
-
-    useEffect(() => {
-        onChange?.(items);
-    }, [items, onChange]);
+        if (!items || items.length === 0) {
+            setNombre('');
+            setPrecio('');
+            setEditIndex(null);
+            setEditValue('');
+        }
+    }, [items]);
 
     return (
         <div>
@@ -77,11 +81,12 @@ export default function InputListCustom({ value = [], onChange }: InputListCusto
                 <Button
                     onClick={addItem}
                     className="p-3 bg-gray-400 rounded-full hover:bg-black cursor-pointer"
-                    type='button'
+                    type="button"
                 >
                     +
                 </Button>
             </div>
+
             <div className="space-y-2">
                 {items.map((item, index) => (
                     <div
@@ -119,7 +124,6 @@ export default function InputListCustom({ value = [], onChange }: InputListCusto
                         ) : (
                             <span>{`${item.nombre}: $${item.precio}`}</span>
                         )}
-
                     </div>
                 ))}
             </div>
