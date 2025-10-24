@@ -1,5 +1,4 @@
-import SalesModule from '@/components/sales/SalesModule'
-import { Button } from '@/components/ui/button'
+import SalesModule from '@/app/dashboard/sales/components/SalesModule'
 import React from 'react'
 
 const Sales = () => {
