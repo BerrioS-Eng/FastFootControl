@@ -20,7 +20,6 @@ export default function UsersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('todos');
-  const [statusFilter, setStatusFilter] = useState<string>('todos');
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table'); // Default to table for better mobile UX
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserDTO | null>(null);
@@ -51,9 +50,8 @@ export default function UsersPage() {
       (user.area || '').toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesRole = roleFilter === 'todos' || (user.role || '') === roleFilter;
-    const matchesStatus = statusFilter === 'todos' || (user.status || '') === statusFilter;
     
-    return matchesSearch && matchesRole && matchesStatus;
+    return matchesSearch && matchesRole;
   });
 
   const handleUserCreated = () => {
@@ -82,26 +80,20 @@ export default function UsersPage() {
     setDeletingUser(user);
   };
 
-  const handleStatusChange = async (userId: number, newStatus: string) => {
+  const testBackendConnection = async () => {
+    toast.info('Probando conexión con el backend...');
     try {
-      // Encontrar el usuario actual
-      const user = users.find(u => u.id === userId);
-      if (!user) return;
-
-      // Crear objeto con datos actualizados
-      const updatedUser = { ...user, status: newStatus as 'activo' | 'inactivo' | 'descanso' };
-
-      // Llamar a la API para actualizar
-      await UsersService.editUser(userId, updatedUser);
-      
-      // Recargar la lista de usuarios
-      loadUsers();
-      toast.success('Estado actualizado exitosamente');
+      // Probar obtener usuarios
+      const usersData = await UsersService.getAllUsers();
+      toast.success(`✅ Conexión exitosa! Se encontraron ${usersData.length} usuarios.`);
+      console.log('Datos de usuarios recibidos:', usersData);
     } catch (error) {
-      console.error('Error updating user status:', error);
-      toast.error('Error al actualizar el estado del usuario');
+      console.error('Error de conexión:', error);
+      toast.error(`❌ Error de conexión: ${error instanceof Error ? error.message : 'Error desconocido'}`);
     }
   };
+
+
 
   const getRoleStats = () => {
     const roles = users.reduce((acc, user) => {
@@ -170,14 +162,26 @@ export default function UsersPage() {
             </div>
             
             {/* Add user button */}
-            <Button 
-              onClick={() => setIsCreateModalOpen(true)} 
-              className="bg-orange-500 hover:bg-orange-600 text-white"
-            >
-              <UserPlus className="h-4 w-4 mr-2" />
-              <span className="hidden sm:inline">Nuevo Empleado</span>
-              <span className="sm:hidden">Agregar</span>
-            </Button>
+            <div className="flex gap-2">
+              {/* Botón de prueba temporal - OCULTO */}
+              <Button 
+                onClick={testBackendConnection}
+                variant="outline"
+                size="sm"
+                className="hidden border-blue-200 text-blue-600 hover:bg-blue-50"
+              >
+                🔧 Test API
+              </Button>
+              
+              <Button 
+                onClick={() => setIsCreateModalOpen(true)} 
+                className="bg-orange-500 hover:bg-orange-600 text-white"
+              >
+                <UserPlus className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Nuevo Empleado</span>
+                <span className="sm:hidden">Agregar</span>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -204,7 +208,7 @@ export default function UsersPage() {
                 />
               </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="w-full max-w-sm">
                 <Select value={roleFilter} onValueChange={setRoleFilter}>
                   <SelectTrigger className="border-orange-200 focus:border-orange-400">
                     <SelectValue placeholder="Todos los roles" />
@@ -213,18 +217,6 @@ export default function UsersPage() {
                     <SelectItem value="todos">Todos los roles</SelectItem>
                     <SelectItem value="admin">Administrador</SelectItem>
                     <SelectItem value="trabajador">Trabajador</SelectItem>
-                  </SelectContent>
-                </Select>
-                
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="border-orange-200 focus:border-orange-400">
-                    <SelectValue placeholder="Todos los estados" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos los estados</SelectItem>
-                    <SelectItem value="activo">Activo</SelectItem>
-                    <SelectItem value="inactivo">Inactivo</SelectItem>
-                    <SelectItem value="descanso">En Descanso</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -272,35 +264,20 @@ export default function UsersPage() {
       </div>
 
       {/* Active Filters */}
-      {(roleFilter !== 'todos' || statusFilter !== 'todos') && (
+      {roleFilter !== 'todos' && (
         <div className="bg-white p-4 rounded-xl shadow-sm border border-orange-200">
           <div className="flex flex-wrap gap-2">
-            {roleFilter !== 'todos' && (
-              <Badge variant="secondary" className="bg-orange-100 text-orange-800">
-                Rol: {roleFilter}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="ml-1 h-4 w-4 p-0 hover:bg-orange-200"
-                  onClick={() => setRoleFilter('todos')}
-                >
-                  ×
-                </Button>
-              </Badge>
-            )}
-            {statusFilter !== 'todos' && (
-              <Badge variant="secondary" className="bg-orange-100 text-orange-800">
-                Estado: {statusFilter}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="ml-1 h-4 w-4 p-0 hover:bg-orange-200"
-                  onClick={() => setStatusFilter('todos')}
-                >
-                  ×
-                </Button>
-              </Badge>
-            )}
+            <Badge variant="secondary" className="bg-orange-100 text-orange-800">
+              Rol: {roleFilter}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="ml-1 h-4 w-4 p-0 hover:bg-orange-200"
+                onClick={() => setRoleFilter('todos')}
+              >
+                ×
+              </Button>
+            </Badge>
           </div>
         </div>
       )}
@@ -323,7 +300,7 @@ export default function UsersPage() {
             <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">No se encontraron empleados</h3>
             <p className="text-gray-600 mb-4">
-              {searchTerm || roleFilter !== 'todos' || statusFilter !== 'todos'
+              {searchTerm || roleFilter !== 'todos'
                 ? 'Intenta ajustar los filtros de búsqueda'
                 : 'Comienza agregando el primer empleado al sistema'
               }
@@ -353,7 +330,6 @@ export default function UsersPage() {
               users={filteredUsers}
               onEdit={handleEditUser}
               onDelete={handleDeleteUser}
-              onStatusChange={handleStatusChange}
             />
           </div>
         )}

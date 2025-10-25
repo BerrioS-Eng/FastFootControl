@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,9 +14,16 @@ import {
   IconEdit,
   IconCalendar
 } from "@tabler/icons-react";
+import EditProfileModal from "@/components/profile/EditProfileModal";
+import { toast } from 'sonner';
 
 export default function ProfilePage() {
   const { user } = useAuth();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const handleProfileUpdated = () => {
+    // El modal ya maneja el toast y la actualización del contexto
+  };
 
   if (!user) {
     return (
@@ -25,7 +33,8 @@ export default function ProfilePage() {
     );
   }
 
-  const generateAvatar = (name: string) => {
+  const generateAvatar = (name: string | undefined) => {
+    if (!name) return 'U';
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
@@ -56,7 +65,10 @@ export default function ProfilePage() {
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Mi Perfil</h1>
-          <Button>
+          <Button 
+            onClick={() => setIsEditModalOpen(true)}
+            className="bg-orange-500 hover:bg-orange-600"
+          >
             <IconEdit className="h-4 w-4 mr-2" />
             Editar Perfil
           </Button>
@@ -141,19 +153,24 @@ export default function ProfilePage() {
                 </div>
               )}
 
-              {user.lastAccess && (
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium">Último acceso:</span>
-                  <div className="flex items-center gap-1 text-sm">
-                    <IconCalendar className="h-3 w-3" />
-                    {user.lastAccess.toLocaleDateString('es-ES')}
-                  </div>
+              <div className="flex justify-between">
+                <span className="text-sm font-medium">Usuario desde:</span>
+                <div className="flex items-center gap-1 text-sm">
+                  <IconCalendar className="h-3 w-3" />
+                  {new Date().toLocaleDateString('es-ES')}
                 </div>
-              )}
+              </div>
             </CardContent>
           </Card>
         </div>
       </div>
+
+      {/* Modal de edición de perfil */}
+      <EditProfileModal
+        open={isEditModalOpen}
+        onOpenChange={setIsEditModalOpen}
+        onProfileUpdated={handleProfileUpdated}
+      />
     </div>
   );
 }

@@ -29,6 +29,10 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      userName: 'Juan Alvarez',
+      password: 'JuanAlvarezDeliChicharron2025'
+    }
   });
 
   const onSubmit = async (data: LoginFormData) => {

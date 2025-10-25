@@ -34,6 +34,7 @@ import {
 import { useAuth } from "@/hooks/useAuth"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
+import { isAdminRole, ROLE_COLORS, ROLE_LABELS } from '@/lib/constants'
 
 export function NavUser({
     user,
@@ -69,43 +70,29 @@ export function NavUser({
         return initials;
     };
 
-    // Obtener color del rol
     const getRoleColor = (role: string) => {
-        switch (role) {
-            case 'admin':
-                return 'bg-red-500 text-white';
-            case 'trabajador':
-                return 'bg-blue-500 text-white';
-            default:
-                return 'bg-gray-500 text-white';
-        }
+        return isAdminRole(role) ? 'bg-red-500 text-white' : 'bg-blue-500 text-white';
     };
 
-    // Obtener icono del rol
     const getRoleIcon = (role: string) => {
-        switch (role) {
-            case 'admin':
-                return <IconShieldCheck className="h-3 w-3" />;
-            case 'trabajador':
-                return <IconUser className="h-3 w-3" />;
-            default:
-                return <IconUser className="h-3 w-3" />;
-        }
+        return isAdminRole(role) ? <IconShieldCheck className="h-3 w-3" /> : <IconUser className="h-3 w-3" />;
     };
 
-    // Use authenticated user data if available
+    const getRoleLabel = (role: string) => {
+        return isAdminRole(role) ? ROLE_LABELS.ADMIN : ROLE_LABELS.WORKER;
+    };
+
+    // Use authenticated user data if available, fallback to prop data
     const displayUser = authUser ? {
         name: authUser.fullName || authUser.userName,
-        email: authUser.email,
+        email: authUser.email || 'Sin email',
         avatar: user.avatar,
-        role: authUser.role,
-        status: authUser.status,
-        lastAccess: authUser.lastAccess
+        role: authUser.role || 'trabajador',
+        status: authUser.status || 'activo'
     } : {
         ...user,
         role: 'trabajador' as const,
-        status: 'activo' as const,
-        lastAccess: new Date()
+        status: 'activo' as const
     };
 
     return (
@@ -136,7 +123,7 @@ export function NavUser({
                                         <Badge className={`text-xs px-1.5 py-0.5 ${getRoleColor(displayUser.role || 'trabajador')}`}>
                                             <div className="flex items-center gap-1">
                                                 {getRoleIcon(displayUser.role || 'trabajador')}
-                                                {displayUser.role === 'admin' ? 'Admin' : 'Trabajador'}
+                                                {getRoleLabel(displayUser.role || 'trabajador')}
                                             </div>
                                         </Badge>
                                     )}
@@ -175,7 +162,7 @@ export function NavUser({
                                         <Badge className={`text-xs px-1.5 py-0.5 ${getRoleColor(displayUser.role)}`}>
                                             <div className="flex items-center gap-1">
                                                 {getRoleIcon(displayUser.role)}
-                                                {displayUser.role === 'admin' ? 'Admin' : 'Trabajador'}
+                                                {getRoleLabel(displayUser.role)}
                                             </div>
                                         </Badge>
                                     </div>

@@ -25,6 +25,7 @@ import { UsersService } from '@/services/users.service';
 import { UserDTO } from '@/types/api';
 import { userEditSchema, UserEditFormData } from '@/lib/validations';
 import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
 
 interface EditUserModalProps {
   user: UserDTO;
@@ -40,6 +41,7 @@ export default function EditUserModal({
   onUserUpdated,
 }: EditUserModalProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const { user: currentUser, updateUser } = useAuth();
 
   const {
     register,
@@ -59,7 +61,10 @@ export default function EditUserModal({
     if (user && open) {
       reset({
         userName: user.userName,
+        fullName: user.fullName || '',
+        email: user.email || '',
         role: user.role,
+        area: user.area || '',
         password: '', // Always empty for security
       });
     }
@@ -78,6 +83,20 @@ export default function EditUserModal({
       }
 
       await UsersService.editUser(user.userId, updateData as UserDTO);
+      
+      // Si estamos editando al usuario actual, actualizar el contexto también
+      if (currentUser && currentUser.userId === user.userId) {
+        const updatedUser = {
+          ...currentUser,
+          userName: data.userName,
+          fullName: data.fullName || currentUser.fullName,
+          email: data.email || currentUser.email,
+          role: data.role,
+          area: data.area || currentUser.area,
+        };
+        updateUser(updatedUser);
+      }
+      
       onUserUpdated();
       onOpenChange(false);
     } catch (error) {
@@ -103,7 +122,7 @@ export default function EditUserModal({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="userName">Nombre del usuario</Label>
+              <Label htmlFor="userName">Nombre de usuario</Label>
               <Input
                 id="userName"
                 {...register('userName')}
@@ -113,6 +132,31 @@ export default function EditUserModal({
                 <p className="text-sm text-red-500">{errors.userName.message}</p>
               )}
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="fullName">Nombre completo</Label>
+              <Input
+                id="fullName"
+                {...register('fullName')}
+                className={errors.fullName ? 'border-red-500' : ''}
+              />
+              {errors.fullName && (
+                <p className="text-sm text-red-500">{errors.fullName.message}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              {...register('email')}
+              className={errors.email ? 'border-red-500' : ''}
+            />
+            {errors.email && (
+              <p className="text-sm text-red-500">{errors.email.message}</p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -129,6 +173,18 @@ export default function EditUserModal({
                 <p className="text-sm text-red-500">{errors.password.message}</p>
               )}
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="area">Área</Label>
+              <Input
+                id="area"
+                {...register('area')}
+                className={errors.area ? 'border-red-500' : ''}
+              />
+              {errors.area && (
+                <p className="text-sm text-red-500">{errors.area.message}</p>
+              )}
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -138,8 +194,8 @@ export default function EditUserModal({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ADMIN">Administrador</SelectItem>
-                <SelectItem value="WORKER">Trabajador</SelectItem>
+                <SelectItem value="admin">👑 Administrador</SelectItem>
+                <SelectItem value="trabajador">👤 Trabajador</SelectItem>
               </SelectContent>
             </Select>
             {errors.role && (

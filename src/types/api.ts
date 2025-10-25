@@ -14,10 +14,17 @@ export interface LoginResponse {
 
 // User Management
 export interface UserDTO {
+  id?: number;
   userId?: number;
   userName: string;
   password?: string;
   role: string;
+  fullName?: string;
+  email?: string;
+  area?: string;
+  status?: 'activo' | 'inactivo' | 'descanso';
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 // Product Management

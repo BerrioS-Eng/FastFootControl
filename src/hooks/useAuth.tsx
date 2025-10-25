@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useContext, createContext, ReactNode } from 'react';
 import { AuthService } from '@/services/auth.service';
+import { UsersService } from '@/services/users.service';
 import { LoginRequest, LoginResponse, UserDTO } from '@/types/api';
 
 interface AuthContextType {
@@ -11,6 +12,9 @@ interface AuthContextType {
   isLoading: boolean;
   login: (credentials: LoginRequest) => Promise<LoginResponse>;
   logout: () => void;
+  refreshUser: () => void;
+  updateUser: (updatedUser: UserDTO) => void;
+  syncUserFromBackend: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -57,6 +61,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(null);
   };
 
+  const refreshUser = () => {
+    const savedUser = localStorage.getItem('user_data');
+    if (savedUser) {
+      try {
+        const userData = JSON.parse(savedUser);
+        setUser(userData);
+      } catch (error) {
+        console.error('Error refreshing user data:', error);
+        // Si hay error, limpiar datos corruptos
+        localStorage.removeItem('user_data');
+        localStorage.removeItem('auth_token');
+      }
+    }
+  };
+
+  const updateUser = (updatedUser: UserDTO) => {
+    setUser(updatedUser);
+    localStorage.setItem('user_data', JSON.stringify(updatedUser));
+  };
+
+  const syncUserFromBackend = async () => {
+    if (!user?.userId) return;
+    
+    try {
+      const updatedUser = await UsersService.refreshCurrentUser(user.userId);
+      setUser(updatedUser);
+    } catch (error) {
+      console.error('Error syncing user from backend:', error);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -66,6 +101,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         login,
         logout,
+        refreshUser,
+        updateUser,
+        syncUserFromBackend,
       }}
     >
       {children}

@@ -1,15 +1,20 @@
-// API Configuration for FastFoodControl - Conectando al Backend Spring Boot
+// API Configuration for FastFoodControl - Using Next.js API Routes as proxy
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080';
+// Use Next.js API routes to avoid CORS issues
+const API_BASE_URL = '/api'; // Local Next.js API routes
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://fast-food-back-uh35.onrender.com';
 
-// Endpoints del Backend Spring Boot
+// Endpoints usando Next.js API Routes como proxy
 export const API_ENDPOINTS = {
   AUTH: `${API_BASE_URL}/auth/login`,
-  PRODUCTS: `${API_BASE_URL}/productos`, // Endpoint del backend Spring Boot
-  SALES: `${API_BASE_URL}/ventas`,       // Endpoint del backend Spring Boot
-  USERS: `${API_BASE_URL}/users/get-all-users`, // Endpoint del backend Spring Boot
-  USER_BY_ID: `${API_BASE_URL}/users/get-user`, // Endpoint específico para obtener usuario por ID
+  PRODUCTS: `${API_BASE_URL}/products`,
+  SALES: `${API_BASE_URL}/sales`,
+  USERS: `${API_BASE_URL}/users`,
+  USER_BY_ID: `${API_BASE_URL}/users`, // Same endpoint, will use query params
 } as const;
+
+// Export backend URL for direct access when needed
+export { BACKEND_URL };
 
 // HTTP Client Configuration - Adaptado para Spring Boot
 class ApiClient {

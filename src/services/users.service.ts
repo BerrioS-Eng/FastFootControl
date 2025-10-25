@@ -2,13 +2,12 @@
 import { apiClient, API_ENDPOINTS } from '@/lib/api-config';
 import { UserDTO } from '@/types/api';
 
-// Error messages centralized
 const ERROR_MESSAGES = {
-  CREATE: 'No se pudo crear el usuario. Inténtalo de nuevo.',
-  UPDATE: 'No se pudo actualizar el usuario. Inténtalo de nuevo.',
-  FETCH: 'No se pudo obtener la información del usuario.',
-  FETCH_ALL: 'No se pudieron cargar los usuarios.',
-  DELETE: 'No se pudo eliminar el usuario. Inténtalo de nuevo.',
+  CREATE: 'No se pudo crear el usuario',
+  UPDATE: 'No se pudo actualizar el usuario',
+  FETCH: 'No se pudo obtener la información del usuario',
+  FETCH_ALL: 'No se pudieron cargar los usuarios',
+  DELETE: 'No se pudo eliminar el usuario',
 } as const;
 
 export class UsersService {
@@ -19,13 +18,16 @@ export class UsersService {
 
   static async createUser(userData: UserDTO): Promise<UserDTO> {
     try {
-      // Adaptar formato para el backend Spring Boot
-      const springBootUserData = {
+      // Usar la API local de Next.js que actúa como proxy
+      const requestData = {
         userName: userData.userName,
         password: userData.password,
-        role: userData.role
+        role: userData.role,
+        fullName: userData.fullName,
+        email: userData.email,
+        area: userData.area
       };
-      return await apiClient.post<UserDTO>(`${API_ENDPOINTS.USERS.replace('/get-all-users', '')}/create-user`, springBootUserData);
+      return await apiClient.post<UserDTO>(API_ENDPOINTS.USERS, requestData);
     } catch (error) {
       this.handleError(error, ERROR_MESSAGES.CREATE);
     }
@@ -33,16 +35,17 @@ export class UsersService {
 
   static async editUser(userId: number, userData: UserDTO): Promise<UserDTO> {
     try {
-      const springBootUserData = {
+      const requestData = {
+        id: userId,
         userId: userId,
         userName: userData.userName,
         password: userData.password,
-        role: userData.role
+        role: userData.role,
+        fullName: userData.fullName,
+        email: userData.email,
+        area: userData.area
       };
-      return await apiClient.put<UserDTO>(
-        `${API_ENDPOINTS.USERS.replace('/get-all-users', '')}/update-user`,
-        springBootUserData
-      );
+      return await apiClient.put<UserDTO>(API_ENDPOINTS.USERS, requestData);
     } catch (error) {
       this.handleError(error, ERROR_MESSAGES.UPDATE);
     }
@@ -50,9 +53,7 @@ export class UsersService {
 
   static async getUserById(userId: number): Promise<UserDTO> {
     try {
-      return await apiClient.get<UserDTO>(
-        `${API_ENDPOINTS.USER_BY_ID}?userId=${userId}`
-      );
+      return await apiClient.get<UserDTO>(`${API_ENDPOINTS.USERS}?id=${userId}`);
     } catch (error) {
       this.handleError(error, ERROR_MESSAGES.FETCH);
     }
@@ -68,11 +69,20 @@ export class UsersService {
 
   static async deleteUser(userId: number): Promise<string> {
     try {
-      return await apiClient.delete<string>(
-        `${API_ENDPOINTS.USERS.replace('/get-all-users', '')}/delete-user?userId=${userId}`
-      );
+      return await apiClient.delete<string>(`${API_ENDPOINTS.USERS}?id=${userId}`);
     } catch (error) {
       this.handleError(error, ERROR_MESSAGES.DELETE);
+    }
+  }
+
+  static async refreshCurrentUser(userId: number): Promise<UserDTO> {
+    try {
+      const userData = await this.getUserById(userId);
+      // Actualizar localStorage con los datos más recientes
+      localStorage.setItem('user_data', JSON.stringify(userData));
+      return userData;
+    } catch (error) {
+      this.handleError(error, ERROR_MESSAGES.FETCH);
     }
   }
 }
