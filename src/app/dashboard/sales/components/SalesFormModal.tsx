@@ -12,7 +12,7 @@ export const SalesFormModal: React.FC = () => {
 
     return (
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-            <DialogContent className="sm:max-w-xl w-xl h-4/5 overflow-y-auto">
+            <DialogContent className="sm:max-w-2xl w-2xl h-4/5 overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>{isEditing ? "Editar Venta" : "Registro de venta"}</DialogTitle>
                     <DialogDescription>

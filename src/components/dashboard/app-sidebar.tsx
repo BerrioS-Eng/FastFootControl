@@ -5,7 +5,8 @@ import {
     IconChartBar,
     IconDashboard,
     IconInnerShadowTop,
-    IconListDetails
+    IconListDetails,
+    IconReportMoney
 } from "@tabler/icons-react"
 import {
     Sidebar,
@@ -37,9 +38,14 @@ const data = {
             icon: IconListDetails,
         },
         {
-            title: "Analytics",
-            url: "/dashboard/analytics",
+            title: "Reportes",
+            url: "/dashboard/reports",
             icon: IconChartBar,
+        },
+        {
+            title: "Gastos",
+            url: "/dashboard/expenses",
+            icon: IconReportMoney,
         }
     ]
 }

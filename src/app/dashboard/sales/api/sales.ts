@@ -2,13 +2,15 @@ import { http } from "@/lib/api/http";
 import { ENDPOINTS } from "@/lib/config";
 import type { SaleDTO, SaleRequest } from "@/app/dashboard/sales/types";
 
-export function toYmd(date: string | Date) {
-    const d = typeof date === "string" ? new Date(date) : date;
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd}`;
+export function todayLocalYmd(): string {
+    const now = new Date();
+    return [
+        now.getFullYear(),
+        String(now.getMonth() + 1).padStart(2, '0'),
+        String(now.getDate()).padStart(2, '0')
+    ].join('-');
 }
+
 
 export const SalesAPI = {
     register: (payload: SaleRequest) =>
@@ -16,11 +18,19 @@ export const SalesAPI = {
             method: "POST",
             body: JSON.stringify(payload),
         }),
-    getByDay: (date: string | Date) => {
-        const ymd = toYmd(date);
-        return http<SaleDTO[]>(ENDPOINTS.sales, `/get-sales-by-day?date=${ymd}`);
+    getByDayNow: async (): Promise<SaleDTO[]> => {
+        const ymd = todayLocalYmd();
+        const data = await http<SaleDTO[]>(ENDPOINTS.sales, `/get-sales-by-day?date=${ymd}`);
+        // Adaptación BackendSale[] -> SaleDTO[]
+        return (data ?? []).map((s): SaleDTO => ({
+            saleId: String(s.saleId),
+            concept: s.concept,
+            paymentMethod: s.paymentMethod,
+            saleDate: s.saleDate,
+            totalPrice: s.totalPrice,
+            items: s.items,
+        }));
     },
-    // Ejemplos futuros (comentados hasta que el back esté listo):
     // getById: (id: string | number) => http<SaleDTO>(ENDPOINTS.sales, `/get-sale?id=${id}`),
     // getAll: () => http<SaleDTO[]>(ENDPOINTS.sales, "/get-all-sales"),
 };

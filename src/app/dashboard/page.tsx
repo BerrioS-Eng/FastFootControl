@@ -9,10 +9,12 @@ import {TopProduct} from "@/app/dashboard/reports/types";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Badge} from "@/components/ui/badge";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
-import {toYmd} from "@/app/dashboard/sales/api/sales"
+import {todayLocalYmd} from "@/app/dashboard/sales/api/sales";
+import {formatCurrency} from "@/lib/utils";
+
 
 export default function PageDashboard() {
-    const [dateYmd] = useState(() => toYmd(new Date()));
+    const [dateYmd] = useState(todayLocalYmd());
 
     const { data: sales, loading: salesLoading, error: salesError } = useSalesByDay(dateYmd);
     const { data: topProducts, loading: topLoading, error: topError } = useTopProductsByDay(dateYmd, 2);
@@ -21,10 +23,10 @@ export default function PageDashboard() {
     const error = salesError || topError;
 
     const validSales = (Array.isArray(sales) ? sales : []).filter(
-        (s): s is SaleDTO => s != null && typeof (s as any).id !== "undefined" && s.id !== null && s.id !== ""
+        (s): s is SaleDTO => s != null && s.saleId != null && String(s.saleId) !== ""
     );
     const totalSalesCount = validSales.length;
-    const totalAmount = validSales.reduce((acc: number, s: SaleDTO) => acc + (Number(s.total) || 0), 0);
+    const totalAmount = validSales.reduce((acc: number, s: SaleDTO) => acc + (Number(s.totalPrice) || 0), 0);
 
     return (
         <div className="space-y-6 p-4 sm:p-6">
@@ -56,7 +58,7 @@ export default function PageDashboard() {
                                 </div>
                                 <div>
                                     <div className="text-sm text-muted-foreground">Total vendido</div>
-                                    <div className="text-3xl font-bold">${totalAmount.toFixed(2)}</div>
+                                    <div className="text-3xl font-bold">{formatCurrency(totalAmount, 'es-CO', 'COP')}</div>
                                 </div>
                             </div>
                         )}
@@ -77,8 +79,8 @@ export default function PageDashboard() {
                             <ul className="space-y-1">
                                 {(topProducts ?? []).slice(0, 2).map((p: TopProduct, idx: number) => (
                                     <li key={`${p.productId}-${idx}`} className="flex items-center justify-between">
-                                        <span className="font-medium">{idx + 1}. {p.name}</span>
-                                        <span className="text-sm text-muted-foreground">{p.quantitySold} vendidos</span>
+                                        <span className="font-medium">{idx + 1}. {p.productName}</span>
+                                        <span className="text-sm text-muted-foreground">{p.totalSold} vendidos</span>
                                     </li>
                                 ))}
                                 {(!topProducts || topProducts.length === 0) && (
@@ -114,12 +116,12 @@ export default function PageDashboard() {
                                 </TableHeader>
                                 <TableBody>
                                     {validSales.map((s) => (
-                                        <TableRow key={String(s.id)}>
+                                        <TableRow key={String(s.saleId)}>
                                             <TableCell className="font-medium">{s.concept}</TableCell>
                                             <TableCell>
                                                 <Badge variant="outline">{s.paymentMethod}</Badge>
                                             </TableCell>
-                                            <TableCell className="text-right">${Number(s.total).toFixed(2)}</TableCell>
+                                            <TableCell className="text-right">{formatCurrency(Number(s.totalPrice), 'es-CO', 'COP')}</TableCell>
                                         </TableRow>
                                     ))}
 

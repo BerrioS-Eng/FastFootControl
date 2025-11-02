@@ -41,10 +41,10 @@ export interface SaleRequest {
 export { saleFormSchema } from "@/app/dashboard/sales/schemas/saleform.schema";
 
 export interface SaleDTO {
-    id: string;        // ajusta a lo que devuelva el back
+    saleId: string;        // ajusta a lo que devuelva el back
     concept: string;
     paymentMethod: string;
     saleDate: string;  // ISO
-    total: number;
+    totalPrice: number;
     items: Array<{ productId: number; quantity: number }>;
 }

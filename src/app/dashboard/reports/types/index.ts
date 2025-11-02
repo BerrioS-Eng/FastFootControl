@@ -1,6 +1,7 @@
 export interface TopProduct {
     productId: number;
-    name: string;
-    quantitySold: number; // o totalQuantity
-    totalRevenue?: number; // opcional
+    productName: string;
+    salePrice: number;
+    totalSold: number;
+    totalSalesValue: number;
 }

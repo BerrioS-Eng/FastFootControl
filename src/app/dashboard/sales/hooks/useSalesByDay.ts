@@ -13,10 +13,10 @@ export function useSalesByDay(dateYmd: string) {
         (async () => {
             try {
                 setLoading(true);
-                const res = await salesService.getByDay(dateYmd);
+                const res = await salesService.getByDayNow();
                 if (!on) return;
                 const normalized = Array.isArray(res)
-                    ? res.filter((s: any) => s && s.id != null && s.id !== "")
+                    ? res.filter((s: any) => s && (s.saleId != null && String(s.saleId) !== ""))
                     : [];
                 setData(normalized);
             } catch (e: any) {
