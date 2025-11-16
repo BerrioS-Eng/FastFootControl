@@ -8,4 +8,6 @@ export const ENDPOINTS = {
     sales: `${API_BASE_URL}/sales`,
     reports: `${API_BASE_URL}/reports`,
     expenses: `${API_BASE_URL}/expenses`,
+    auth: `${API_BASE_URL}/auth`,
+    users: `${API_BASE_URL}/users`,
 } as const;
