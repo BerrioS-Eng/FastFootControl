@@ -12,16 +12,19 @@ export const SalesFormModal: React.FC = () => {
 
     return (
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-            <DialogContent className="sm:max-w-2xl w-2xl h-4/5 overflow-y-auto">
+            <DialogContent
+                className="w-[calc(100vw-2rem)] max-w-full max-h-[90vh] overflow-y-auto p-4 sm:max-w-2xl"
+            >
                 <DialogHeader>
                     <DialogTitle>{isEditing ? "Editar Venta" : "Registro de venta"}</DialogTitle>
                     <DialogDescription>
-                        {isEditing ? "Edite los detalles de la venta en proceso." : "Complete el formulario para registrar una nueva venta."}
+                        {isEditing
+                            ? "Edite los detalles de la venta en proceso."
+                            : "Complete el formulario para registrar una nueva venta."}
                     </DialogDescription>
                 </DialogHeader>
 
                 <SaleForm initialValues={initialData || undefined} />
-
             </DialogContent>
         </Dialog>
     );

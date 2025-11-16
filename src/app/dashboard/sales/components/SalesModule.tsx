@@ -11,17 +11,24 @@ const ModuleBody: React.FC = () => {
     const { openNew } = useSalesDraft();
 
     return (
-        <div>
-            <Button className="bg-[#FB8C00] hover:bg-[#FB8C00] hover:cursor-pointer" onClick={openNew}>
-                Registrar Venta
-            </Button>
+        <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <Button
+                    className="bg-[#FB8C00] hover:bg-[#FB8C00] w-full sm:w-auto"
+                    onClick={openNew}
+                >
+                    Registrar Venta
+                </Button>
+            </div>
 
             <SalesInProgressList sales={sales} />
             <SalesFormModal />
 
             {sales.length === 0 && (
-                <div className="mt-50 flex justify-center content-center">
-                    <span className="text-gray-200 font-bold">No hay registro de ventas en proceso.</span>
+                <div className="mt-10 flex justify-center">
+          <span className="text-muted-foreground font-medium">
+            No hay registro de ventas en proceso.
+          </span>
                 </div>
             )}
         </div>

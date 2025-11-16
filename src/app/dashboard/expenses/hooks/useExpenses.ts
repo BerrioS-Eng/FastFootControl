@@ -1,50 +1,25 @@
-'use client';
-
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import type { ExpenseDTO } from '@/app/dashboard/expenses/types';
-import { createExpense, deleteExpense, editExpense, getAllExpenses } from '@/app/dashboard/expenses/api/expenses';
+import { expensesService } from '@/app/dashboard/expenses/services/expense.service';
 
 export function useExpenses() {
-    const [items, setItems] = useState<ExpenseDTO[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
+    const [data, setData] = React.useState<ExpenseDTO[]>([]);
+    const [loading, setLoading] = React.useState(false);
+    const [error, setError] = React.useState<string | null>(null);
 
-    const load = useCallback(async () => {
-        setLoading(true);
-        setError(null);
+    const reload = React.useCallback(async () => {
+        setLoading(true); setError(null);
         try {
-            const data = await getAllExpenses();
-            setItems(data);
+            const list = await expensesService.getAll();
+            setData(list);
         } catch (e: any) {
-            setError(e?.message ?? 'Error al cargar gastos');
+            setError(e?.message || 'No se pudo cargar');
         } finally {
             setLoading(false);
         }
     }, []);
 
-    useEffect(() => {
-        load();
-    }, [load]);
+    React.useEffect(() => { void reload(); }, [reload]);
 
-    const createOne = useCallback(async (payload: ExpenseDTO) => {
-        const created = await createExpense(payload);
-        setItems((prev) => [created, ...prev]);
-        return created;
-    }, []);
-
-    const updateOne = useCallback(async (expenseId: number, payload: ExpenseDTO) => {
-        const updated = await editExpense(expenseId, payload);
-        setItems((prev) => prev.map((i) => (i.expenseId === expenseId ? updated : i)));
-        return updated;
-    }, []);
-
-    const removeOne = useCallback(async (expenseId: number) => {
-        await deleteExpense(expenseId);
-        setItems((prev) => prev.filter((i) => i.expenseId !== expenseId));
-    }, []);
-
-    return useMemo(
-        () => ({ items, loading, error, reload: load, createOne, updateOne, removeOne }),
-        [error, items, load, createOne, updateOne, removeOne]
-    );
+    return { data, loading, error, reload };
 }

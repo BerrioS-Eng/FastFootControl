@@ -5,7 +5,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "../../../../components/ui/select";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {ProductsTable} from "./ProductsTable";
 import {saleFormSchema, type SaleFormData} from "@/app/dashboard/sales/types";
 import {useSalesDraft} from "@/app/dashboard/sales/context/SalesDraftContext";
@@ -42,7 +42,7 @@ export const SaleForm: React.FC<{ initialValues?: Partial<SaleFormData> }> = ({i
     });
 
     useEffect(() => {
-        form.setValue("saleDate", new Date().toISOString(), { shouldValidate: true, shouldDirty: true });
+        form.setValue("saleDate", new Date().toISOString(), {shouldValidate: true, shouldDirty: true});
         setCurrentFormData(form.getValues());
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -53,72 +53,72 @@ export const SaleForm: React.FC<{ initialValues?: Partial<SaleFormData> }> = ({i
     }, [form, setCurrentFormData]);
 
 
-
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit((values) => submit(values))} className="space-y-4" noValidate>
-                {/* saleDate */}
-                <FormField
-                    control={form.control}
-                    name="saleDate"
-                    render={({field}) => (
-                        <FormItem>
-                            <FormLabel>Fecha y hora</FormLabel>
-                            <FormControl>
-                                <Input
-                                    type="datetime-local"
-                                    value={toLocalInputValue(field.value)}
-                                    readOnly
-                                />
-                            </FormControl>
-                            <FormDescription>Fecha y hora de la venta</FormDescription>
-                            <FormMessage/>
-                        </FormItem>
-                    )}
-                />
-
-                {/* concept */}
-                <FormField
-                    control={form.control}
-                    name="concept"
-                    render={({field}) => (
-                        <FormItem>
-                            <FormLabel>Concepto</FormLabel>
-                            <FormControl>
-                                <Input {...field} />
-                            </FormControl>
-                            <FormMessage/>
-                        </FormItem>
-                    )}
-                />
-
-                {/* paymentMethod */}
-                <FormField
-                    control={form.control}
-                    name="paymentMethod"
-                    render={({field}) => (
-                        <FormItem>
-                            <FormLabel>Método de pago</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
+                {/* Cabecera en grid responsiva */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* saleDate */}
+                    <FormField
+                        control={form.control}
+                        name="saleDate"
+                        render={({field}) => (
+                            <FormItem>
+                                <FormLabel>Fecha y hora</FormLabel>
                                 <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Seleccione un método de pago"/>
-                                    </SelectTrigger>
+                                    <Input type="datetime-local" value={toLocalInputValue(field.value)} readOnly/>
                                 </FormControl>
-                                <SelectContent>
-                                    <SelectItem value="Efectivo">Efectivo</SelectItem>
-                                    <SelectItem value="Transferencia">Transferencia</SelectItem>
-                                    <SelectItem value="Tarjeta">Tarjeta</SelectItem>
-                                    <SelectItem value="Otros">Otros</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <FormDescription>Seleccione cómo se realizó el pago.</FormDescription>
-                            <FormMessage/>
-                        </FormItem>
-                    )}
-                />
+                                <FormDescription>Fecha y hora de la venta</FormDescription>
+                                <FormMessage/>
+                            </FormItem>
+                        )}
+                    />
 
-                {/* products */}
+                    {/* paymentMethod */}
+                    <FormField
+                        control={form.control}
+                        name="paymentMethod"
+                        render={({field}) => (
+                            <FormItem>
+                                <FormLabel>Método de pago</FormLabel>
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Seleccione un método de pago"/>
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="Efectivo">Efectivo</SelectItem>
+                                        <SelectItem value="Transferencia">Transferencia</SelectItem>
+                                        <SelectItem value="Tarjeta">Tarjeta</SelectItem>
+                                        <SelectItem value="Otros">Otros</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormDescription>Seleccione cómo se realizó el pago.</FormDescription>
+                                <FormMessage/>
+                            </FormItem>
+                        )}
+                    />
+
+                    {/* concept (ocupa 2 columnas en sm+) */}
+                    <div className="sm:col-span-2">
+                        <FormField
+                            control={form.control}
+                            name="concept"
+                            render={({field}) => (
+                                <FormItem>
+                                    <FormLabel>Concepto</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} />
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                </div>
+
+                {/* products (componente responsivo abajo) */}
                 <FormField
                     control={form.control}
                     name="products"
@@ -144,7 +144,7 @@ export const SaleForm: React.FC<{ initialValues?: Partial<SaleFormData> }> = ({i
                                         }));
                                         field.onChange(products);
                                         const total = products.reduce((sum, p) => sum + p.totalPrice, 0);
-                                        form.setValue('totalPrice', total, { shouldValidate: true });
+                                        form.setValue('totalPrice', total, {shouldValidate: true});
                                     }}
                                 />
                             </FormControl>
@@ -162,8 +162,7 @@ export const SaleForm: React.FC<{ initialValues?: Partial<SaleFormData> }> = ({i
                             <FormLabel>Monto</FormLabel>
                             <FormControl>
                                 <div className="space-y-1">
-                                    <Input value={formatCurrency(field.value, 'es-CO', 'COP')} readOnly />
-                                    {/* input controlado real, único que lleva {...field} */}
+                                    <Input value={formatCurrency(field.value, 'es-CO', 'COP')} readOnly/>
                                     <input type="hidden" name={field.name} value={field.value ?? 0} ref={field.ref}
                                            onChange={field.onChange} onBlur={field.onBlur}/>
                                 </div>
@@ -174,24 +173,29 @@ export const SaleForm: React.FC<{ initialValues?: Partial<SaleFormData> }> = ({i
                     )}
                 />
 
-                {/* Botones */}
-                <div className="flex justify-center space-x-2">
+                {/* Botones responsivos */}
+                <div className="flex flex-col sm:flex-row justify-center gap-2">
                     {!isEditing && (
-                        <Button type="button" variant="outline" onClick={() => { form.reset(); close(); }} disabled={isLoading}>
+                        <Button type="button" variant="outline" onClick={() => {
+                            form.reset();
+                            close();
+                        }} disabled={isLoading} className="w-full sm:w-auto">
                             Cancelar
                         </Button>
                     )}
                     {!isEditing && (
-                        <Button type="button" variant="secondary" className="bg-[#FB8C00]" onClick={saveDraft} disabled={isLoading}>
+                        <Button type="button" variant="secondary" className="bg-[#FB8C00] w-full sm:w-auto"
+                                onClick={saveDraft} disabled={isLoading}>
                             En proceso
                         </Button>
                     )}
                     {isEditing && (
-                        <Button className="btn btn-destructive" variant="destructive" onClick={deleteCurrent}>
+                        <Button className="btn btn-destructive w-full sm:w-auto" variant="destructive"
+                                onClick={deleteCurrent}>
                             Eliminar
                         </Button>
                     )}
-                    <Button type="submit" disabled={isLoading}>Guardar</Button>
+                    <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">Guardar</Button>
                 </div>
             </form>
         </Form>

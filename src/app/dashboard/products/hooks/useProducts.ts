@@ -4,7 +4,7 @@ import type { ProductFilters } from '../types';
 
 export function useProducts(filters: ProductFilters) {
     return useQuery({
-        queryKey: ['products'],
+        queryKey: ['products', filters],
         queryFn: () => ProductService.list(),
         staleTime: 30_000,
         placeholderData: [],

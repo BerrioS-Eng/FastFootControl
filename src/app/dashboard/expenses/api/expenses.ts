@@ -1,50 +1,21 @@
 'use client';
+import { http } from '@/lib/api/http';
+import type { ExpenseDTO } from '@/app/dashboard/expenses/types';
 
-import { ENDPOINTS } from '@/lib/config';
-import { ExpenseDTO } from '@/app/dashboard/expenses/types';
+export const ExpensesAPI = {
+    // Create
+    create: (payload: ExpenseDTO) =>
+        http<ExpenseDTO>("", "/api/expenses", { method: "POST", body: JSON.stringify(payload) }),
 
-const BASE = ENDPOINTS.expenses;
+    // Read
+    getAll: () => http<ExpenseDTO[]>("", "/api/expenses/all"),
+    getById: (id: string | number) => http<ExpenseDTO>("", `/api/expenses/${id}`),
 
-// Endpoints del backend:
-// POST   /expenses/create-expense
-// PUT    /expenses/edit-expense?expenseId=ID
-// GET    /expenses/get-all-expenses
-// GET    /expenses/get-expense-by-id?expenseId=ID
-// DELETE /expenses/delete-expense?expenseId=ID
+    // Update (only ADMIN)
+    update: (id: string | number, payload: ExpenseDTO) =>
+        http<ExpenseDTO>("", `/api/expenses/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
 
-export async function getAllExpenses(): Promise<ExpenseDTO[]> {
-    const res = await fetch(`${BASE}/get-all-expenses`, { cache: 'no-store' });
-    if (!res.ok) throw new Error('No se pudo obtener la lista de gastos');
-    return res.json();
-}
-
-export async function getExpenseById(expenseId: number): Promise<ExpenseDTO> {
-    const res = await fetch(`${BASE}/get-expense-by-id?expenseId=${expenseId}`, { cache: 'no-store' });
-    if (!res.ok) throw new Error('No se pudo obtener el gasto');
-    return res.json();
-}
-
-export async function createExpense(payload: ExpenseDTO): Promise<ExpenseDTO> {
-    const res = await fetch(`${BASE}/create-expense`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-    });
-    if (!res.ok) throw new Error('No se pudo crear el gasto');
-    return res.json();
-}
-
-export async function editExpense(expenseId: number, payload: ExpenseDTO): Promise<ExpenseDTO> {
-    const res = await fetch(`${BASE}/edit-expense?expenseId=${expenseId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-    });
-    if (!res.ok) throw new Error('No se pudo editar el gasto');
-    return res.json();
-}
-
-export async function deleteExpense(expenseId: number): Promise<void> {
-    const res = await fetch(`${BASE}/delete-expense?expenseId=${expenseId}`, { method: 'DELETE' });
-    if (!res.ok) throw new Error('No se pudo eliminar el gasto');
-}
+    // Delete (only ADMIN)
+    remove: (id: string | number) =>
+        http<void>("", `/api/expenses/${id}`, { method: "DELETE" }),
+};

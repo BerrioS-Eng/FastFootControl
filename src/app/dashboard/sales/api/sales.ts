@@ -14,14 +14,14 @@ export function todayLocalYmd(): string {
 
 export const SalesAPI = {
     register: (payload: SaleRequest) =>
-        http<SaleDTO>(ENDPOINTS.sales, "/register-sale", {
+        http<SaleDTO>("", "/api/sales", {
             method: "POST",
             body: JSON.stringify(payload),
         }),
     getByDayNow: async (): Promise<SaleDTO[]> => {
         const ymd = todayLocalYmd();
-        const data = await http<SaleDTO[]>(ENDPOINTS.sales, `/get-sales-by-day?date=${ymd}`);
-        // Adaptación BackendSale[] -> SaleDTO[]
+        const data = await http<SaleDTO[]>("", `/api/sales?date=${ymd}`);
+        // Si necesitas adaptar la forma, mantenlo. Si ya coincide, puedes retornar data directo.
         return (data ?? []).map((s): SaleDTO => ({
             saleId: String(s.saleId),
             concept: s.concept,

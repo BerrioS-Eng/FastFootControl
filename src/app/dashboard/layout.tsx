@@ -1,12 +1,17 @@
-import React from 'react'
+
+import React from 'react';
 import {
     SidebarInset,
     SidebarProvider,
-} from "@/components/ui/sidebar"
-import { AppSidebar } from '@/components/dashboard/app-sidebar'
-import { SiteHeader } from '@/components/dashboard/site-header'
+} from "@/components/ui/sidebar";
+import { AppSidebar } from '@/components/dashboard/app-sidebar';
+import { SiteHeader } from '@/components/dashboard/site-header';
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth/server";
 
-export default function DashboardLayout({children}: { children: React.ReactNode }) {
+export default async function DashboardLayout({children}: { children: React.ReactNode }) {
+    const user = await getCurrentUser();
+    if (!user) redirect("/login");
     return (
         <SidebarProvider
             style={
@@ -16,7 +21,7 @@ export default function DashboardLayout({children}: { children: React.ReactNode 
                 } as React.CSSProperties
             }
         >
-            <AppSidebar variant='inset' />
+            <AppSidebar variant='inset' user={user}/>
             <SidebarInset>
                 <SiteHeader />
                 {children}

@@ -3,7 +3,6 @@ import type { Product, CostItem } from '../types';
 import {fromDTO, toCreateRequest, toEditRequest} from "../mappers/products.mapper";
 import {ProductSaleTableDTO} from "@/app/dashboard/products/types/dto";
 
-
 export const ProductService = {
     async list(): Promise<Product[]> {
         const dtos = await ProductsAPI.getAll();
@@ -13,13 +12,7 @@ export const ProductService = {
         const dto = await ProductsAPI.getById(id);
         return fromDTO(dto);
     },
-    async create(input: {
-        name: string;
-        ingredients: CostItem[];
-        directCosts: CostItem[];
-        labour: number;
-        profitMargin: number;
-    }, imageFile: File): Promise<Product> {
+    async create(input: { name: string; ingredients: CostItem[]; directCosts: CostItem[]; labour: number; profitMargin: number; }, imageFile: File): Promise<Product> {
         const dto = await ProductsAPI.create(toCreateRequest(input), imageFile);
         return fromDTO(dto);
     },

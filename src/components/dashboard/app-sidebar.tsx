@@ -1,13 +1,5 @@
 "use client"
-
 import * as React from "react"
-import {
-    IconChartBar,
-    IconDashboard,
-    IconInnerShadowTop,
-    IconListDetails,
-    IconReportMoney
-} from "@tabler/icons-react"
 import {
     Sidebar,
     SidebarContent,
@@ -19,47 +11,23 @@ import {
 } from "@/components/ui/sidebar"
 import { NavMain } from "./navMain"
 import { NavUser } from "./navUser"
+import type { UserLoginResponse } from "@/lib/auth/types"
+import type { Role } from "@/lib/auth/types"
+import {filterNavItemsByRole, navMain} from "@/components/dashboard/nav-config";
+import {IconInnerShadowTop} from "@tabler/icons-react";
 
-const data = {
-    user: {
-        name: "Local1",
-        email: "delichicharronespr@gmail.com",
-        avatar: "/logo.png"
-    },
-    navMain: [
-        {
-            title: "Panel",
-            url: "/dashboard",
-            icon: IconDashboard,
-        },
-        {
-            title: "Productos",
-            url: "/dashboard/products",
-            icon: IconListDetails,
-        },
-        {
-            title: "Reportes",
-            url: "/dashboard/reports",
-            icon: IconChartBar,
-        },
-        {
-            title: "Gastos",
-            url: "/dashboard/expenses",
-            icon: IconReportMoney,
-        }
-    ]
-}
+export function AppSidebar(
+    { user, ...props }: React.ComponentProps<typeof Sidebar> & { user: UserLoginResponse | null },
+) {
+    const role: Role | undefined = user?.role
+    const items = filterNavItemsByRole(navMain, role)
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     return (
         <Sidebar collapsible="offcanvas" {...props}>
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton
-                            asChild
-                            className="data-[slot=sidebar-menu-button:!p-1.5"
-                        >
+                        <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button:!p-1.5">
                             <a href="#">
                                 <IconInnerShadowTop className="!size-5" />
                                 <span className="text-base font-semibold">Delichicharrones</span>
@@ -69,10 +37,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </SidebarMenu>
             </SidebarHeader>
             <SidebarContent>
-                <NavMain items={data.navMain} />
+                <NavMain items={items} />
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={data.user} />
+                <NavUser user={user} />
             </SidebarFooter>
         </Sidebar>
     )

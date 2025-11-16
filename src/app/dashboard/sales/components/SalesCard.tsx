@@ -9,13 +9,16 @@ type Props = { sale: SaleInProgress };
 export const SaleCard: React.FC<Props> = ({ sale }) => {
     const { openEdit } = useSalesDraft();
     return (
-        <Card className='w-80 border-amber-500 hover:cursor-pointer' onClick={() => openEdit(sale)}>
+        <Card
+            className="w-full border-amber-500 hover:cursor-pointer hover:shadow-sm transition"
+            onClick={() => openEdit(sale)}
+        >
             <CardHeader>
-                <CardTitle>{sale.concept}</CardTitle>
+                <CardTitle className="truncate">{sale.concept}</CardTitle>
             </CardHeader>
-            <CardContent>
-                <p>Método de pago: {sale.paymentMethod || 'No especificado'}</p>
-                <p>Total: {typeof sale.totalPrice === 'number' ? formatCurrency(sale.totalPrice, 'es-CO', 'COP') : 'No especificado'}</p>
+            <CardContent className="space-y-1 text-sm">
+                <p className="text-muted-foreground">Método de pago: {sale.paymentMethod || 'No especificado'}</p>
+                <p className="font-medium">Total: {typeof sale.totalPrice === 'number' ? formatCurrency(sale.totalPrice, 'es-CO', 'COP') : 'No especificado'}</p>
             </CardContent>
         </Card>
     );

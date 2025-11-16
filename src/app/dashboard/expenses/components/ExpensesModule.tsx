@@ -1,9 +1,11 @@
 'use client'
 
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import ExpenseForm from '@/app/dashboard/expenses/components/ExpenseForm'
 import ExpensesTable from '@/app/dashboard/expenses/components/ExpensesTable'
 import { useExpenses } from '@/app/dashboard/expenses/hooks/useExpenses'
+import { useExpenseActions } from '@/app/dashboard/expenses/hooks/useExpenseActions'
+import { useConfirmDelete } from '@/app/dashboard/expenses/hooks/useConfirmDelete'
 import type { ExpenseDTO } from '@/app/dashboard/expenses/types'
 import { Button } from '@/components/ui/button'
 import {
@@ -16,13 +18,24 @@ import {
     AlertDialogTitle,
     AlertDialogDescription,
 } from '@/components/ui/alert-dialog'
+import type { Role } from '@/lib/auth/types'
 
-export default function ExpensesModule() {
-    const { items, loading, error, reload, createOne, updateOne, removeOne } = useExpenses()
+type Props = {
+    role: Role;
+};
+
+export default function ExpensesModule({ role }: Props) {
+    const { data, loading, error, reload } = useExpenses()
+
+    const { handleSubmit, removeOne } = useExpenseActions({ reload })
 
     const [modalOpen, setModalOpen] = useState(false)
     const [editing, setEditing] = useState<ExpenseDTO | undefined>(undefined)
-    const [pendingDelete, setPendingDelete] = useState<ExpenseDTO | null>(null)
+
+    const { item: pendingDelete, openConfirm, cancel, confirm } = useConfirmDelete<ExpenseDTO>(removeOne)
+
+    const isAdmin = role === 'ADMIN'
+    const isWorker = role === 'WORKER'
 
     const openCreate = useCallback(() => {
         setEditing(undefined)
@@ -36,45 +49,32 @@ export default function ExpensesModule() {
 
     const closeModal = useCallback(() => setModalOpen(false), [])
 
-    const handleSubmit = useCallback(
-        async (payload: ExpenseDTO, expenseId?: number) => {
-            if (expenseId) await updateOne(expenseId, payload)
-            else await createOne(payload)
-        },
-        [createOne, updateOne]
-    )
-
-    const confirmDelete = useCallback((row: ExpenseDTO) => setPendingDelete(row), [])
-
-    const performDelete = useCallback(async () => {
-        if (pendingDelete?.expenseId) {
-            await removeOne(pendingDelete.expenseId)
-        }
-        setPendingDelete(null)
-    }, [pendingDelete, removeOne])
-
-    const headerRight = useMemo(
-        () => (
-            <Button onClick={openCreate}>Agregar gasto</Button>
-        ),
-        [openCreate]
-    )
-
     return (
         <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Gastos</h2>
-                {headerRight}
+                <Button onClick={openCreate} disabled={!isAdmin && !isWorker}>
+                    Agregar gasto
+                </Button>
             </div>
 
             {error && (
                 <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
                     {error}
-                    <button onClick={reload} className="ml-3 underline">Reintentar</button>
+                    <button onClick={reload} className="ml-3 underline">
+                        Reintentar
+                    </button>
                 </div>
             )}
 
-            <ExpensesTable data={items} loading={loading} onEdit={openEdit} onDelete={confirmDelete} />
+            <ExpensesTable
+                data={data}
+                loading={loading}
+                onEdit={openEdit}
+                onDelete={openConfirm}
+                canEdit={isAdmin}
+                canDelete={isAdmin}
+            />
 
             <ExpenseForm
                 open={modalOpen}
@@ -83,7 +83,7 @@ export default function ExpensesModule() {
                 initialData={editing}
             />
 
-            <AlertDialog open={!!pendingDelete} onOpenChange={(v) => !v && setPendingDelete(null)}>
+            <AlertDialog open={!!pendingDelete} onOpenChange={(v) => !v && cancel()}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Eliminar gasto</AlertDialogTitle>
@@ -93,7 +93,10 @@ export default function ExpensesModule() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction onClick={performDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        <AlertDialogAction
+                            onClick={confirm}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
                             Eliminar
                         </AlertDialogAction>
                     </AlertDialogFooter>

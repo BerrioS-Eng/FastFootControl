@@ -18,17 +18,16 @@ type Props = {
     loading?: boolean
     onEdit: (row: ExpenseDTO) => void
     onDelete: (row: ExpenseDTO) => void
+    canEdit?: boolean
+    canDelete?: boolean
 }
 
-export default function ExpensesTable({ data, loading, onEdit, onDelete }: Props) {
+export default function ExpensesTable({ data, loading, onEdit, onDelete, canEdit = false, canDelete = false }: Props) {
     const hasData = (data?.length ?? 0) > 0
 
     return (
         <div className="rounded-md border">
             <Table>
-                {!hasData && !loading && (
-                    <TableCaption className="py-6">Sin registros</TableCaption>
-                )}
                 <TableHeader>
                     <TableRow>
                         <TableHead className="w-[80px]">ID</TableHead>
@@ -62,10 +61,10 @@ export default function ExpensesTable({ data, loading, onEdit, onDelete }: Props
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
-                                            <Button variant="outline" size="sm" onClick={() => onEdit(row)}>
+                                            <Button variant="outline" size="sm" onClick={() => onEdit(row)} disabled={!canEdit}>
                                                 Editar
                                             </Button>
-                                            <Button variant="destructive" size="sm" onClick={() => onDelete(row)}>
+                                            <Button variant="destructive" size="sm" onClick={() => onDelete(row)} disabled={!canDelete}>
                                                 Eliminar
                                             </Button>
                                         </div>

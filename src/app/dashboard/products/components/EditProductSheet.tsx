@@ -34,7 +34,7 @@ export default function EditProductSheet({productId, open, onOpenChange}: EditPr
     const {data: product, isLoading} = useProduct(open ? productId : null);
     const {mutateAsync, isPending} = useEditProduct();
 
-    // Prefill form when product loads or sheet opens
+    // Prefill form when products loads or sheet opens
     useEffect(() => {
         if (!product || !open) return;
         form.reset({
