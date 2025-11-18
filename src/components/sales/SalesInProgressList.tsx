@@ -9,7 +9,9 @@ type Props = {
 };
 
 export const SalesInProgressList: React.FC<Props> = ({ sales, onEdit }) => {
-  if (!sales.length) return null;
+  if (!sales.length) {
+    return <div className="hidden"></div>;
+  }
 
   return (
     <div>

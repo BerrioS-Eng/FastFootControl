@@ -52,7 +52,6 @@ export default function CreateUserModal({
     setIsLoading(true);
 
     try {
-      console.log('Creating user with data:', data);
       await UsersService.createUser(data);
       onUserCreated();
       reset();

@@ -6,7 +6,6 @@ import {
 import { AppSidebar } from '@/components/app-sidebar'
 import { SiteHeader } from '@/components/site-header'
 import ProtectedRoute from '@/components/auth/ProtectedRoute'
-import { UserSyncComponent } from '@/components/UserSyncComponent'
 
 export default function DashboardLayout({children}: { children: React.ReactNode }) {
     return (
@@ -49,7 +48,6 @@ export default function DashboardLayout({children}: { children: React.ReactNode 
                             </div>
                         </footer>
                     </SidebarInset>
-                    <UserSyncComponent />
                 </SidebarProvider>
             </div>
         </ProtectedRoute>

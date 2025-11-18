@@ -194,20 +194,7 @@ const FormCreateProducts = () => {
             formData.append("image", selectedImage);
         }
 
-        console.log('=== CONTENIDO DE FORMDATA ===');
-        for (const [key, value] of formData.entries()) {
-            if (value instanceof File) {
-                console.log(`${key}:`, {
-                    name: value.name,
-                    size: value.size,
-                    type: value.type,
-                    lastModified: value.lastModified,
-                });
-            } else {
-                console.log(`${key}:`, value);
-            }
-        }
-        console.log('================================');
+
 
         // Enviar la solicitud al backend
         try {

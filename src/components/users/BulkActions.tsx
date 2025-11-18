@@ -58,7 +58,9 @@ export function BulkActions({
   const [pendingAction, setPendingAction] = useState<BulkAction | null>(null);
   const [newRole, setNewRole] = useState<UserRole>('WORKER');
 
-  if (selectedCount === 0) return null;
+  if (selectedCount === 0) {
+    return <div className="hidden"></div>;
+  }
 
   const handleAction = (action: BulkAction) => {
     if (action === 'delete') {

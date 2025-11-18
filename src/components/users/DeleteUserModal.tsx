@@ -42,7 +42,18 @@ export default function DeleteUserModal({ user, open, onOpenChange, onUserDelete
     }
   };
 
-  if (!user) return null;
+  if (!user) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Error</DialogTitle>
+          </DialogHeader>
+          <p>No se encontró el usuario</p>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

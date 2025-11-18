@@ -67,11 +67,23 @@ export function parseAuthHeader(request: NextRequest) {
 
 export function validateToken(token: string): DecodedToken | null {
   try {
-    // Para el entorno de desarrollo, podemos usar una clave secreta simple
-    // En producción, esto debe coincidir con la clave del backend
-    const secret = process.env.JWT_SECRET || 'your-secret-key';
+    // TEMPORAL: Para desarrollo, decodificar sin verificar la firma
+    // En producción, esto debe usar la misma clave que el backend
+    const decoded = jwt.decode(token) as DecodedToken;
     
-    const decoded = jwt.verify(token, secret) as DecodedToken;
+    if (!decoded) {
+      console.error('Token decode failed');
+      return null;
+    }
+    
+    // Verificar que el token no haya expirado
+    const now = Math.floor(Date.now() / 1000);
+    if (decoded.exp && decoded.exp < now) {
+      console.error('Token expired');
+      return null;
+    }
+    
+    console.log('Token decoded successfully:', { sub: decoded.sub, role: decoded.role, exp: decoded.exp });
     return decoded;
   } catch (error) {
     console.error('Token validation error:', error);

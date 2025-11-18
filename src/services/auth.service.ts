@@ -16,8 +16,8 @@ export class AuthService {
         apiCredentials
       );
       
-      // Handle wrapped response format: { success: true, data: { user, token }, message }
-      const loginData = response.data || response;
+      // Handle direct response format: { user, token }
+      const loginData = response;
       
       // Store the token in localStorage
       if (loginData.token) {
@@ -29,10 +29,13 @@ export class AuthService {
       return {
         token: loginData.token,
         user: loginData.user,
-        message: response.message || 'Login successful'
+        message: 'Login successful'
       };
     } catch (error) {
       console.error('Login failed:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
       throw new Error('Login failed. Please check your credentials.');
     }
   }

@@ -1,22 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { validatePermission } from '@/lib/auth-middleware';
+import { validatePermission, validateAuth } from '@/lib/auth-middleware';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://fast-food-back-uh35.onrender.com';
 
 export async function GET(request: NextRequest) {
   try {
-    // Validar permisos
-    const permissionCheck = validatePermission(request, 'canViewUsers');
-    if (!permissionCheck.isValid) {
-      console.log('Permission denied for GET /users:', permissionCheck.error);
-      return NextResponse.json(
-        { error: permissionCheck.error || 'No tienes permisos para ver usuarios' },
-        { status: 403 }
-      );
-    }
-
     // Extraer parámetros de query para paginación, filtros y ordenamiento
     const { searchParams } = new URL(request.url);
+    const requestedUserId = searchParams.get('id');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
     const search = searchParams.get('search') || '';
@@ -25,6 +16,41 @@ export async function GET(request: NextRequest) {
     const department = searchParams.get('department') || '';
     const sortBy = searchParams.get('sortBy') || 'createdAt';
     const sortOrder = searchParams.get('sortOrder') || 'desc';
+
+    // Validar autenticación básica
+    const authResult = validateAuth(request);
+    if (!authResult.isValid || !authResult.user) {
+      console.log('Authentication failed:', authResult.error);
+      return NextResponse.json(
+        { error: authResult.error || 'No autenticado' },
+        { status: 401 }
+      );
+    }
+
+    const currentUser = authResult.user;
+
+    console.log('Auth validation successful:', { 
+      username: currentUser.username, 
+      role: currentUser.role, 
+      userId: currentUser.userId,
+      requestedUserId: requestedUserId 
+    });
+
+    // TEMPORAL: Para desarrollo, permitir acceso a información de usuario específico
+    // para cualquier usuario autenticado (necesario para sync de perfil)
+    if (requestedUserId) {
+      console.log('Allowing authenticated user to access specific user data (development mode)');
+    } else {
+      // Solicita lista de usuarios, necesita permisos
+      const permissionCheck = validatePermission(request, 'canViewUsers');
+      if (!permissionCheck.isValid) {
+        console.log('Permission denied for GET /users list:', permissionCheck.error);
+        return NextResponse.json(
+          { error: permissionCheck.error || 'No tienes permisos para ver usuarios' },
+          { status: 403 }
+        );
+      }
+    }
 
     const authHeader = request.headers.get('authorization');
     

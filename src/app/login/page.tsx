@@ -24,7 +24,14 @@ export default function LoginPage() {
   }
 
   if (isAuthenticated) {
-    return null; // Redirecting...
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-orange-100">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+          <p className="text-orange-700">Redirigiendo al dashboard...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

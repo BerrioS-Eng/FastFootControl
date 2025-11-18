@@ -41,6 +41,10 @@ class ApiClient {
 
   async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const token = this.getAuthToken();
+    console.log(`API Request: ${options.method || 'GET'} ${endpoint}`, {
+      hasToken: !!token,
+      tokenPreview: token ? token.substring(0, 20) + '...' : 'none'
+    });
     
     const config: RequestInit = {
       headers: {
@@ -53,6 +57,7 @@ class ApiClient {
 
     try {
       const response = await fetch(endpoint, config);
+      console.log(`API Response: ${response.status} ${response.statusText}`);
       return await this.handleResponse<T>(response);
     } catch (error) {
       console.error('API request failed:', error);

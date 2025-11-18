@@ -42,7 +42,6 @@ export const SalesFormModal: React.FC<Props> = ({
 
   const handleSubmit = (data: SaleFormData) => {
     const normalized = toSaleInProgress(data, initialData?.id);
-    console.log("Datos del registro venta: ", normalized);
     onSave(normalized.id);
   };
 

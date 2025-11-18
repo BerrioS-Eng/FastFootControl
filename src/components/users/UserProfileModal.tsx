@@ -44,7 +44,18 @@ interface UserProfileModalProps {
 export function UserProfileModal({ userId, open, onOpenChange }: UserProfileModalProps) {
   const { data: userProfile, isLoading, error } = useUserProfile(userId);
 
-  if (!userId) return null;
+  if (!userId) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Error</DialogTitle>
+          </DialogHeader>
+          <p>No se proporcionó ID de usuario</p>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);

@@ -30,8 +30,8 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      userName: 'Juan Alvarez',
-      password: 'JuanAlvarezDeliChicharron2025'
+      userName: '',
+      password: ''
     }
   });
 

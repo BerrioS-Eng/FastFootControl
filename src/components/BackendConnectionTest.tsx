@@ -58,7 +58,7 @@ export default function BackendConnectionTest() {
 
       await AuthService.login({
         userName: 'admin',
-        password: 'admin123'
+        password: 'test123'
       });
 
       setStatus(prev => ({ ...prev, auth: 'success' }));
