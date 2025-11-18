@@ -24,7 +24,7 @@ export async function GET(
     const userId = params.id;
     const authHeader = request.headers.get('authorization');
 
-    console.log('🔵 Fetching detailed profile for user:', userId);
+    console.log('Fetching detailed profile for user:', userId);
 
     // Obtener información básica del usuario
     const userResponse = await fetch(`${BACKEND_URL}/users/get-all-users`, {
@@ -125,7 +125,7 @@ export async function GET(
       statistics: generateStatistics()
     };
 
-    console.log('✅ User profile fetched successfully for user:', userId);
+    console.log('User profile fetched successfully for user:', userId);
 
     return NextResponse.json(userProfile, { status: 200 });
 

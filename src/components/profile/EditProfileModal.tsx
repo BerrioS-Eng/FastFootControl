@@ -89,12 +89,12 @@ export default function EditProfileModal({
       };
 
       updateUser(updatedUser);
-      toast.success('✅ Perfil actualizado correctamente');
+      toast.success('Perfil actualizado correctamente');
       onProfileUpdated();
       onOpenChange(false);
     } catch (error) {
       console.error('Error updating profile:', error);
-      toast.error('❌ Error al actualizar el perfil');
+      toast.error('Error al actualizar el perfil');
     } finally {
       setIsLoading(false);
     }

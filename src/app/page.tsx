@@ -32,8 +32,8 @@ const mapElementsData = [
     bgClass: 'bg-gradient-to-br from-orange-500 to-red-500',
     textClass: 'text-white',
     contacts: [
-      { icon: '📧', text: 'delichicharronespr@gmail.com' },
-      { icon: '📱', text: '+57 (323) 479-8248' },
+      { icon: 'Email', text: 'delichicharronespr@gmail.com' },
+      { icon: 'Teléfono', text: '+57 (323) 479-8248' },
       { icon: '📍', text: 'Planeta Rica, Córdoba, Colombia' },
     ],
   },

@@ -66,17 +66,17 @@ export class UsersService {
       
       // Si la respuesta tiene el formato paginado, extraer solo los datos
       if (response && typeof response === 'object' && 'data' in response) {
-        console.log('📊 API Response (paginated):', response);
+        console.log('API Response (paginated):', response);
         return response.data;
       }
       
       // Si la respuesta es directamente un array (fallback)
       if (Array.isArray(response)) {
-        console.log('📊 API Response (direct array):', response);
+        console.log('API Response (direct array):', response);
         return response;
       }
       
-      console.warn('⚠️ Unexpected API response format:', response);
+      console.warn('Unexpected API response format:', response);
       return [];
     } catch (error) {
       this.handleError(error, ERROR_MESSAGES.FETCH_ALL);

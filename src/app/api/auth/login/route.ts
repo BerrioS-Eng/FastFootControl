@@ -5,7 +5,7 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://fast-food-ba
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    console.log('🔵 Login request received:', body);
+    console.log('Login request received:', body);
     
     // Try different endpoints and formats based on common Spring Boot patterns
     const endpoints = ['/auth/login', '/api/auth/login', '/login', '/api/login'];
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       
       for (let i = 0; i < formats.length; i++) {
         const currentFormat = formats[i];
-        console.log(`🔵 Trying endpoint ${endpoint} with format ${i + 1}:`, currentFormat);
+        console.log(`Trying endpoint ${endpoint} with format ${i + 1}:`, currentFormat);
         
         try {
           const response = await fetch(`${BACKEND_URL}${endpoint}`, {
@@ -33,11 +33,11 @@ export async function POST(request: NextRequest) {
             body: JSON.stringify(currentFormat),
           });
         
-          console.log(`🔵 Backend response status for endpoint ${endpoint} format ${i + 1}:`, response.status);
+          console.log(`Backend response status for endpoint ${endpoint} format ${i + 1}:`, response.status);
           
           let data;
           const responseText = await response.text();
-          console.log(`🔵 Backend raw response for endpoint ${endpoint} format ${i + 1}:`, responseText);
+          console.log(`Backend raw response for endpoint ${endpoint} format ${i + 1}:`, responseText);
           
           try {
             data = JSON.parse(responseText);
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
           }
 
           if (response.ok) {
-            console.log(`✅ Login successful with endpoint ${endpoint} format ${i + 1}:`, data);
+            console.log(`Login successful with endpoint ${endpoint} format ${i + 1}:`, data);
             return NextResponse.json(data, { status: 200 });
           } else if (response.status !== 400 && response.status !== 404) {
             // If it's not a bad request or not found, return the error immediately
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
             );
           }
           
-          console.log(`⚠️ Endpoint ${endpoint} format ${i + 1} failed with ${response.status}, trying next...`);
+          console.log(`Endpoint ${endpoint} format ${i + 1} failed with ${response.status}, trying next...`);
         } catch (formatError) {
           console.error(`🔴 Error with endpoint ${endpoint} format ${i + 1}:`, formatError);
         }

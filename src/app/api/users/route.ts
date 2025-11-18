@@ -5,16 +5,15 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://fast-food-ba
 
 export async function GET(request: NextRequest) {
   try {
-    // 🔓 AUTENTICACIÓN TEMPORALMENTE DESACTIVADA PARA DESARROLLO
-    // const permissionCheck = validatePermission(request, 'canViewUsers');
-    // if (!permissionCheck.isValid) {
-    //   console.log('🔴 Permission denied for GET /users:', permissionCheck.error);
-    //   return NextResponse.json(
-    //     { error: permissionCheck.error || 'No tienes permisos para ver usuarios' },
-    //     { status: 403 }
-    //   );
-    // }
-    console.log('🔓 Access granted - Authentication disabled for development');
+    // Validar permisos
+    const permissionCheck = validatePermission(request, 'canViewUsers');
+    if (!permissionCheck.isValid) {
+      console.log('Permission denied for GET /users:', permissionCheck.error);
+      return NextResponse.json(
+        { error: permissionCheck.error || 'No tienes permisos para ver usuarios' },
+        { status: 403 }
+      );
+    }
 
     // Extraer parámetros de query para paginación, filtros y ordenamiento
     const { searchParams } = new URL(request.url);
@@ -29,7 +28,7 @@ export async function GET(request: NextRequest) {
 
     const authHeader = request.headers.get('authorization');
     
-    console.log('🔵 Fetching users with params:', { page, limit, search, role, isActive, department, sortBy, sortOrder });
+    console.log('Fetching users with params:', { page, limit, search, role, isActive, department, sortBy, sortOrder });
     
     // Por ahora, obtenemos todos los usuarios del backend y aplicamos filtros en el frontend
     // En el futuro, el backend debería soportar estos parámetros directamente
@@ -42,7 +41,7 @@ export async function GET(request: NextRequest) {
     });
 
     const responseText = await response.text();
-    console.log('🔵 Backend get users response:', response.status, responseText);
+    console.log('Backend get users response:', response.status, responseText);
 
     let allUsers;
     try {
@@ -144,7 +143,7 @@ export async function GET(request: NextRequest) {
       }
     };
 
-    console.log('✅ Users fetched successfully:', {
+    console.log('Users fetched successfully:', {
       total: totalItems,
       filtered: paginatedUsers.length,
       page: `${page}/${totalPages}`
@@ -162,21 +161,20 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // 🔓 AUTENTICACIÓN TEMPORALMENTE DESACTIVADA PARA DESARROLLO
-    // const permissionCheck = validatePermission(request, 'canCreateUsers');
-    // if (!permissionCheck.isValid) {
-    //   console.log('🔴 Permission denied for POST /users:', permissionCheck.error);
-    //   return NextResponse.json(
-    //     { error: permissionCheck.error || 'No tienes permisos para crear usuarios' },
-    //     { status: 403 }
-    //   );
-    // }
-    console.log('🔓 Access granted - Authentication disabled for development');
+    // Validar permisos
+    const permissionCheck = validatePermission(request, 'canCreateUsers');
+    if (!permissionCheck.isValid) {
+      console.log('Permission denied for POST /users:', permissionCheck.error);
+      return NextResponse.json(
+        { error: permissionCheck.error || 'No tienes permisos para crear usuarios' },
+        { status: 403 }
+      );
+    }
 
     const body = await request.json();
     const authHeader = request.headers.get('authorization');
     
-    console.log('🔵 Creating user with data:', body);
+    console.log('Creating user with data:', body, 'by user:', permissionCheck.user?.username);
     
     const response = await fetch(`${BACKEND_URL}/users/create-user`, {
       method: 'POST',
@@ -188,7 +186,7 @@ export async function POST(request: NextRequest) {
     });
 
     const responseText = await response.text();
-    console.log('🔵 Backend create user response:', response.status, responseText);
+    console.log('Backend create user response:', response.status, responseText);
 
     let data;
     try {
@@ -216,21 +214,20 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    // 🔓 AUTENTICACIÓN TEMPORALMENTE DESACTIVADA PARA DESARROLLO
-    // const permissionCheck = validatePermission(request, 'canEditUsers');
-    // if (!permissionCheck.isValid) {
-    //   console.log('🔴 Permission denied for PUT /users:', permissionCheck.error);
-    //   return NextResponse.json(
-    //     { error: permissionCheck.error || 'No tienes permisos para editar usuarios' },
-    //     { status: 403 }
-    //   );
-    // }
-    console.log('🔓 Access granted - Authentication disabled for development');
+    // Validar permisos
+    const permissionCheck = validatePermission(request, 'canEditUsers');
+    if (!permissionCheck.isValid) {
+      console.log('Permission denied for PUT /users:', permissionCheck.error);
+      return NextResponse.json(
+        { error: permissionCheck.error || 'No tienes permisos para editar usuarios' },
+        { status: 403 }
+      );
+    }
 
     const body = await request.json();
     const authHeader = request.headers.get('authorization');
     
-    console.log('🔵 Updating user with data:', body);
+    console.log('Updating user with data:', body, 'by user:', permissionCheck.user?.username);
     
     const response = await fetch(`${BACKEND_URL}/users/update-user`, {
       method: 'PUT',
@@ -242,7 +239,7 @@ export async function PUT(request: NextRequest) {
     });
 
     const responseText = await response.text();
-    console.log('🔵 Backend update user response:', response.status, responseText);
+    console.log('Backend update user response:', response.status, responseText);
 
     let data;
     try {
@@ -270,16 +267,15 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    // 🔓 AUTENTICACIÓN TEMPORALMENTE DESACTIVADA PARA DESARROLLO
-    // const permissionCheck = validatePermission(request, 'canDeleteUsers');
-    // if (!permissionCheck.isValid) {
-    //   console.log('🔴 Permission denied for DELETE /users:', permissionCheck.error);
-    //   return NextResponse.json(
-    //     { error: permissionCheck.error || 'No tienes permisos para eliminar usuarios' },
-    //     { status: 403 }
-    //   );
-    // }
-    console.log('🔓 Access granted - Authentication disabled for development');
+    // Validar permisos
+    const permissionCheck = validatePermission(request, 'canDeleteUsers');
+    if (!permissionCheck.isValid) {
+      console.log('Permission denied for DELETE /users:', permissionCheck.error);
+      return NextResponse.json(
+        { error: permissionCheck.error || 'No tienes permisos para eliminar usuarios' },
+        { status: 403 }
+      );
+    }
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
@@ -292,7 +288,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    console.log('🔵 Deleting user with ID:', id);
+    console.log('Deleting user with ID:', id, 'by user:', permissionCheck.user?.username);
 
     const response = await fetch(`${BACKEND_URL}/users/delete-user?userId=${id}`, {
       method: 'DELETE',
@@ -303,7 +299,7 @@ export async function DELETE(request: NextRequest) {
     });
 
     const responseText = await response.text();
-    console.log('🔵 Backend delete user response:', response.status, responseText);
+    console.log('Backend delete user response:', response.status, responseText);
 
     let data;
     try {

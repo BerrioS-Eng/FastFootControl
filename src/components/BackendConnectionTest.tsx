@@ -39,14 +39,14 @@ export default function BackendConnectionTest() {
 
       if (response.ok) {
         setStatus(prev => ({ ...prev, backend: 'connected', message: 'Backend conectado' }));
-        addLog('✅ Backend respondió correctamente');
+        addLog('Backend respondió correctamente');
         return true;
       } else {
         throw new Error(`Backend respondió con status: ${response.status}`);
       }
     } catch (error) {
       setStatus(prev => ({ ...prev, backend: 'error', message: `Error de conexión: ${error}` }));
-      addLog(`❌ Error conectando al backend: ${error}`);
+      addLog(`Error conectando al backend: ${error}`);
       return false;
     }
   };
@@ -62,10 +62,10 @@ export default function BackendConnectionTest() {
       });
 
       setStatus(prev => ({ ...prev, auth: 'success' }));
-      addLog('✅ Autenticación exitosa');
+      addLog('Autenticación exitosa');
     } catch (error) {
       setStatus(prev => ({ ...prev, auth: 'error' }));
-      addLog(`❌ Error en autenticación: ${error}`);
+      addLog(`Error en autenticación: ${error}`);
     }
   };
 
@@ -77,10 +77,10 @@ export default function BackendConnectionTest() {
       const users = await UsersService.getAllUsers();
       
       setStatus(prev => ({ ...prev, users: 'success' }));
-      addLog(`✅ Usuarios obtenidos correctamente: ${users.length} usuarios`);
+      addLog(`Usuarios obtenidos correctamente: ${users.length} usuarios`);
     } catch (error) {
       setStatus(prev => ({ ...prev, users: 'error' }));
-      addLog(`❌ Error obteniendo usuarios: ${error}`);
+      addLog(`Error obteniendo usuarios: ${error}`);
     }
   };
 
@@ -134,7 +134,7 @@ export default function BackendConnectionTest() {
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          🔗 Prueba de Conexión Backend
+          Prueba de Conexión Backend
           <Button 
             onClick={runFullTest} 
             variant="outline" 

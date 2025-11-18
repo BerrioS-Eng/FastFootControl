@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('🔵 Bulk action:', action, 'for users:', userIds, 'by user:', permissionCheck.user?.username);
+    console.log('Bulk action:', action, 'for users:', userIds, 'by user:', permissionCheck.user?.username);
 
     const authHeader = request.headers.get('authorization');
     const results = [];
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.log(`✅ Bulk action completed: ${successCount} success, ${errorCount} errors`);
+    console.log(`Bulk action completed: ${successCount} success, ${errorCount} errors`);
 
     return NextResponse.json({
       message: `Acción completada: ${successCount} exitosos, ${errorCount} errores`,

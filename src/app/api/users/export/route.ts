@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { filters = {}, columns = [], includeInactive = true } = body;
 
-    console.log('🔵 Exporting users with filters:', filters, 'columns:', columns);
+    console.log('Exporting users with filters:', filters, 'columns:', columns);
 
     const authHeader = request.headers.get('authorization');
     
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
     const bom = '\uFEFF';
     const csvWithBom = bom + csvContent;
 
-    console.log('✅ Users exported successfully:', {
+    console.log('Users exported successfully:', {
       total: allUsers.length,
       filtered: filteredUsers.length,
       columns: exportColumns.length

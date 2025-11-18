@@ -25,12 +25,12 @@ export default function ConnectionTest() {
       const authData = await authResponse.text();
       
       if (authResponse.ok) {
-        setTestResult('✅ Connection successful! Backend is responding.');
+        setTestResult('Connection successful! Backend is responding.');
       } else {
-        setTestResult(`⚠️ Backend responded but auth failed (expected): ${authResponse.status} - This is normal for a test connection.`);
+        setTestResult(`Backend responded but auth failed (expected): ${authResponse.status} - This is normal for a test connection.`);
       }
     } catch (error) {
-      setTestResult(`❌ Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setTestResult(`Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsLoading(false);
     }
@@ -53,12 +53,12 @@ export default function ConnectionTest() {
         }),
       });
 
-      setTestResult(`🔄 Direct connection attempt - Status: ${response.status}`);
+      setTestResult(`Direct connection attempt - Status: ${response.status}`);
     } catch (error) {
       if (error instanceof Error && error.message.includes('CORS')) {
-        setTestResult('🔒 CORS error confirmed - This is why we need the proxy APIs');
+        setTestResult('CORS error confirmed - This is why we need the proxy APIs');
       } else {
-        setTestResult(`❌ Direct connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        setTestResult(`Direct connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     } finally {
       setIsLoading(false);

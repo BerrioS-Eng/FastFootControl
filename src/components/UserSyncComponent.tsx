@@ -10,9 +10,19 @@ export function UserSyncComponent() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // 🔓 COMPONENTE TEMPORALMENTE DESACTIVADO - Autenticación deshabilitada para desarrollo
-    console.log('🔓 UserSyncComponent disabled - Authentication is temporarily disabled for development');
-    return;
+    if (!user?.userId) return;
+
+    // Sincronización inicial
+    syncUserFromBackend();
+    
+    // Sincronización periódica cada 5 minutos
+    intervalRef.current = setInterval(syncUserFromBackend, SYNC_INTERVAL);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
     
     // if (!user?.userId) return;
     // 

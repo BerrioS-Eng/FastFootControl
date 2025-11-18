@@ -5,7 +5,7 @@ export class DataSyncUtils {
    * Limpia los datos de autenticación y redirige al login
    */
   static forceReauth() {
-    toast.info('♻️ Sincronizando datos...');
+    toast.info('Sincronizando datos...');
     
     setTimeout(() => {
       localStorage.removeItem('auth_token');

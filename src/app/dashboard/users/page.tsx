@@ -43,8 +43,8 @@ export default function UsersPage() {
     try {
       setIsLoading(true);
       const usersData = await UsersService.getAllUsers();
-      console.log('🔍 Loaded users data:', usersData);
-      console.log('🔍 User roles:', usersData.map(u => ({ name: u.fullName, role: u.role })));
+      console.log('Loaded users data:', usersData);
+      console.log('User roles:', usersData.map(u => ({ name: u.fullName, role: u.role })));
       setUsers(usersData);
     } catch (error) {
       console.error('Error loading users:', error);
@@ -118,8 +118,8 @@ export default function UsersPage() {
       return acc;
     }, {} as Record<string, number>);
 
-    console.log('🔍 Users data:', users);
-    console.log('🔍 Role counts:', roles);
+    console.log('Users data:', users);
+    console.log('Role counts:', roles);
 
     return [
       { 
