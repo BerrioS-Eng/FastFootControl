@@ -25,7 +25,8 @@ import {
   Shield,
   RotateCcw
 } from 'lucide-react';
-import { UserFilters, UserRole } from '@/types/enhanced';
+import { UserFilters } from '@/types/enhanced';
+import { UserRole } from '@/types/api';
 import { useDebounce } from '@/hooks/useDebounce';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';

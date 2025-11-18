@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
+// import { ScrollArea } from '@/components/ui/scroll-area'; // Temporarily disabled
 import {
   User,
   Mail,
@@ -124,7 +124,7 @@ export function UserProfileModal({ userId, open, onOpenChange }: UserProfileModa
           </DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-8rem)]">
+        <div className="max-h-[calc(90vh-8rem)] overflow-y-auto">
           <div className="space-y-6">
             {/* Información básica */}
             <Card>
@@ -304,7 +304,7 @@ export function UserProfileModal({ userId, open, onOpenChange }: UserProfileModa
               </TabsContent>
             </Tabs>
           </div>
-        </ScrollArea>
+        </div>
 
         <div className="flex justify-end pt-4 border-t">
           <Button onClick={() => onOpenChange(false)}>

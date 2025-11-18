@@ -31,9 +31,9 @@ import { BulkActions } from './BulkActions';
 import { UserProfileModal } from './UserProfileModal';
 import { ExportButton } from './ExportButton';
 import { SkeletonTable } from '@/components/ui/skeleton-table';
-import { CreateUserModal } from './CreateUserModal';
-import { EditUserModal } from './EditUserModal';
-import { DeleteUserModal } from './DeleteUserModal';
+import CreateUserModal from './CreateUserModal';
+import EditUserModal from './EditUserModal';
+import DeleteUserModal from './DeleteUserModal';
 import { toast } from 'sonner';
 import { format, formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -432,37 +432,31 @@ export function EnhancedUserManagement({ className }: EnhancedUserManagementProp
       <CreateUserModal
         open={showCreateModal}
         onOpenChange={setShowCreateModal}
-        onSubmit={(data) => {
-          createUser(data);
+        onUserCreated={() => {
           setShowCreateModal(false);
         }}
-        isLoading={isCreating}
       />
 
-      <EditUserModal
-        open={showEditModal}
-        onOpenChange={setShowEditModal}
-        user={selectedUser}
-        onSubmit={(data) => {
-          updateUser(data);
-          setShowEditModal(false);
-          setSelectedUser(null);
-        }}
-        isLoading={isUpdating}
-      />
+      {selectedUser && (
+        <EditUserModal
+          open={showEditModal}
+          onOpenChange={setShowEditModal}
+          user={selectedUser}
+          onUserUpdated={() => {
+            setShowEditModal(false);
+            setSelectedUser(null);
+          }}
+        />
+      )}
 
       <DeleteUserModal
         open={showDeleteModal}
         onOpenChange={setShowDeleteModal}
         user={selectedUser}
-        onConfirm={() => {
-          if (selectedUser?.id) {
-            deleteUserMutation(selectedUser.id);
-            setShowDeleteModal(false);
-            setSelectedUser(null);
-          }
+        onUserDeleted={() => {
+          setShowDeleteModal(false);
+          setSelectedUser(null);
         }}
-        isLoading={isDeleting}
       />
 
       <UserProfileModal

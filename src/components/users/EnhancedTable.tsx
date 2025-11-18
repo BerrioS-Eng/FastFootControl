@@ -118,8 +118,10 @@ export function EnhancedTable({
               <Checkbox
                 checked={isAllSelected}
                 onCheckedChange={onSelectAll}
-                ref={(el) => {
-                  if (el) el.indeterminate = isPartiallySelected;
+                ref={(el: any) => {
+                  if (el && el.querySelector && el.querySelector('input')) {
+                    el.querySelector('input').indeterminate = isPartiallySelected;
+                  }
                 }}
                 aria-label="Seleccionar todos los usuarios"
               />

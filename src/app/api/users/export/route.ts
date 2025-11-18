@@ -127,9 +127,9 @@ export async function POST(request: NextRequest) {
     };
 
     // Crear contenido CSV
-    const csvHeaders = exportColumns.map(col => columnLabels[col] || col).join(',');
+    const csvHeaders = exportColumns.map((col: string) => columnLabels[col] || col).join(',');
     const csvRows = filteredUsers.map(user => 
-      exportColumns.map(column => {
+      exportColumns.map((column: string) => {
         const value = formatValue(user[column], column);
         // Envolver en comillas si contiene comas, saltos de línea o comillas
         if (value.includes(',') || value.includes('\n') || value.includes('"')) {

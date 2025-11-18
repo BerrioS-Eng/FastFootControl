@@ -196,7 +196,7 @@ export function ExportButton({ filters, totalUsers, className }: ExportButtonPro
                   <Checkbox
                     id="include-inactive"
                     checked={includeInactive}
-                    onCheckedChange={setIncludeInactive}
+                    onCheckedChange={(checked: boolean) => setIncludeInactive(checked)}
                   />
                   <label
                     htmlFor="include-inactive"
