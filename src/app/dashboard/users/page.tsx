@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, UserPlus, Grid, Table, Filter, Users, Shield } from 'lucide-react';
+import { Search, UserPlus, Grid, Table, Filter, Users, Shield, Lock, AlertTriangle } from 'lucide-react';
 import { UsersService } from '@/services/users.service';
 import { UserDTO } from '@/types/api';
 import { SimpleUserTable } from '@/components/users/SimpleUserTable';
@@ -13,22 +13,38 @@ import UserCard from '@/components/users/UserCard';
 import CreateUserModal from '@/components/users/CreateUserModal';
 import EditUserModal from '@/components/users/EditUserModal';
 import DeleteUserModal from '@/components/users/DeleteUserModal';
+import { PermissionGuard } from '@/components/auth/PermissionGuard';
+import { usePermissions } from '@/hooks/usePermissions';
+import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 
 export default function UsersPage() {
+  const { hasPermission, isAdmin, userRole } = usePermissions();
+  const { user } = useAuth();
   const [users, setUsers] = useState<UserDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('todos');
-  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table'); // Default to table for better mobile UX
+  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserDTO | null>(null);
   const [deletingUser, setDeletingUser] = useState<UserDTO | null>(null);
+
+  // Verificar permisos al cargar el componente
+  if (!hasPermission('canViewUsers')) {
+    return (
+      <PermissionGuard permission="canViewUsers">
+        <div></div>
+      </PermissionGuard>
+    );
+  }
 
   const loadUsers = async () => {
     try {
       setIsLoading(true);
       const usersData = await UsersService.getAllUsers();
+      console.log('🔍 Loaded users data:', usersData);
+      console.log('🔍 User roles:', usersData.map(u => ({ name: u.fullName, role: u.role })));
       setUsers(usersData);
     } catch (error) {
       console.error('Error loading users:', error);
@@ -97,13 +113,29 @@ export default function UsersPage() {
 
   const getRoleStats = () => {
     const roles = users.reduce((acc, user) => {
-      acc[user.role] = (acc[user.role] || 0) + 1;
+      const roleKey = user.role?.toLowerCase() || 'worker';
+      acc[roleKey] = (acc[roleKey] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 
+    console.log('🔍 Users data:', users);
+    console.log('🔍 Role counts:', roles);
+
     return [
-      { role: 'admin', count: roles.admin || 0, icon: Shield, color: 'text-red-600' },
-      { role: 'trabajador', count: roles.trabajador || 0, icon: Users, color: 'text-blue-600' }
+      { 
+        role: 'admin', 
+        count: (roles.admin || 0) + (roles.manager || 0), // ADMIN + MANAGER = Administradores
+        icon: Shield, 
+        color: 'text-red-600',
+        label: 'Administradores'
+      },
+      { 
+        role: 'trabajador', 
+        count: roles.worker || 0, // WORKER = Trabajadores
+        icon: Users, 
+        color: 'text-blue-600',
+        label: 'Trabajadores'
+      }
     ];
   };
 
@@ -163,24 +195,31 @@ export default function UsersPage() {
             
             {/* Add user button */}
             <div className="flex gap-2">
-              {/* Botón de prueba temporal - OCULTO */}
-              <Button 
-                onClick={testBackendConnection}
-                variant="outline"
-                size="sm"
-                className="hidden border-blue-200 text-blue-600 hover:bg-blue-50"
-              >
-                🔧 Test API
-              </Button>
+              {/* Información de rol actual */}
+              <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-3 py-1 rounded-lg">
+                <Lock className="h-4 w-4" />
+                <span className="font-medium">Acceso: {userRole}</span>
+              </div>
               
-              <Button 
-                onClick={() => setIsCreateModalOpen(true)} 
-                className="bg-orange-500 hover:bg-orange-600 text-white"
-              >
-                <UserPlus className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Nuevo Empleado</span>
-                <span className="sm:hidden">Agregar</span>
-              </Button>
+              {/* Botón de crear solo si tiene permisos */}
+              <PermissionGuard permission="canCreateUsers" showMessage={false}>
+                <Button 
+                  onClick={() => setIsCreateModalOpen(true)} 
+                  className="bg-orange-500 hover:bg-orange-600 text-white"
+                >
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Nuevo Empleado</span>
+                  <span className="sm:hidden">Agregar</span>
+                </Button>
+              </PermissionGuard>
+
+              {/* Mensaje para usuarios sin permisos de creación */}
+              {!hasPermission('canCreateUsers') && (
+                <div className="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 px-3 py-1 rounded-lg">
+                  <AlertTriangle className="h-4 w-4" />
+                  <span>Solo lectura</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -305,13 +344,15 @@ export default function UsersPage() {
                 : 'Comienza agregando el primer empleado al sistema'
               }
             </p>
-            <Button 
-              onClick={() => setIsCreateModalOpen(true)}
-              className="bg-orange-500 hover:bg-orange-600"
-            >
-              <UserPlus className="h-4 w-4 mr-2" />
-              Agregar Empleado
-            </Button>
+            <PermissionGuard permission="canCreateUsers" showMessage={false}>
+              <Button 
+                onClick={() => setIsCreateModalOpen(true)}
+                className="bg-orange-500 hover:bg-orange-600"
+              >
+                <UserPlus className="h-4 w-4 mr-2" />
+                Agregar Empleado
+              </Button>
+            </PermissionGuard>
           </div>
         ) : viewMode === 'cards' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

@@ -12,19 +12,43 @@ export interface LoginResponse {
   message: string;
 }
 
+// Role definitions
+export type UserRole = 'ADMIN' | 'WORKER' | 'MANAGER';
+export type UserStatus = 'activo' | 'inactivo' | 'descanso';
+
+export interface Permission {
+  canViewUsers: boolean;
+  canCreateUsers: boolean;
+  canEditUsers: boolean;
+  canDeleteUsers: boolean;
+  canViewProducts: boolean;
+  canCreateProducts: boolean;
+  canEditProducts: boolean;
+  canDeleteProducts: boolean;
+  canViewSales: boolean;
+  canCreateSales: boolean;
+  canViewReports: boolean;
+  canManageSettings: boolean;
+}
+
 // User Management
 export interface UserDTO {
   id?: number;
   userId?: number;
   userName: string;
   password?: string;
-  role: string;
+  role: UserRole;
   fullName?: string;
   email?: string;
   area?: string;
-  status?: 'activo' | 'inactivo' | 'descanso';
+  status?: UserStatus;
+  isActive: boolean;
+  lastLogin?: Date;
   createdAt?: Date;
   updatedAt?: Date;
+  phone?: string;
+  department?: string;
+  profileImage?: string;
 }
 
 // Product Management

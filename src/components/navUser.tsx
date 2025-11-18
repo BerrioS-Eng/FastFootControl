@@ -27,14 +27,15 @@ import {
     IconUserCircle, 
     IconSettings,
     IconKey,
-    IconHistory,
     IconShieldCheck,
-    IconUser
+    IconUser,
+    IconCrown,
+    IconBriefcase
 } from "@tabler/icons-react"
 import { useAuth } from "@/hooks/useAuth"
+import { usePermissions } from "@/hooks/usePermissions"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
-import { isAdminRole, ROLE_COLORS, ROLE_LABELS } from '@/lib/constants'
 
 export function NavUser({
     user,
@@ -42,24 +43,14 @@ export function NavUser({
     user: {
         name: string,
         email: string,
-        avatar: string
+        avatar: string,
+        role?: string
     }
 }) {
-    const { isMobile } = useSidebar();
-    const { logout, user: authUser } = useAuth();
-    const router = useRouter();
-    const [isOnline, setIsOnline] = useState(true);
-
-    // Simular cambios de estado online/offline
-    useEffect(() => {
-        const interval = setInterval(() => {
-            // Simular que el usuario está siempre online para este ejemplo
-            setIsOnline(true);
-        }, 30000);
-        return () => clearInterval(interval);
-    }, []);
-
-    const handleLogout = () => {
+  const { isMobile } = useSidebar();
+  const { logout, user: authUser } = useAuth();
+  const { isAdmin, isManager, isWorker, userRole } = usePermissions();
+  const router = useRouter();    const handleLogout = () => {
         logout();
         router.push('/login');
     };
@@ -70,16 +61,33 @@ export function NavUser({
         return initials;
     };
 
-    const getRoleColor = (role: string) => {
-        return isAdminRole(role) ? 'bg-red-500 text-white' : 'bg-blue-500 text-white';
-    };
-
-    const getRoleIcon = (role: string) => {
-        return isAdminRole(role) ? <IconShieldCheck className="h-3 w-3" /> : <IconUser className="h-3 w-3" />;
-    };
-
-    const getRoleLabel = (role: string) => {
-        return isAdminRole(role) ? ROLE_LABELS.ADMIN : ROLE_LABELS.WORKER;
+    const getRoleDisplay = () => {
+        switch (userRole) {
+            case 'ADMIN':
+                return {
+                    label: 'Administrador',
+                    color: 'bg-red-500 text-white',
+                    icon: <IconCrown className="h-3 w-3" />
+                };
+            case 'MANAGER':
+                return {
+                    label: 'Gerente',
+                    color: 'bg-blue-500 text-white',
+                    icon: <IconBriefcase className="h-3 w-3" />
+                };
+            case 'WORKER':
+                return {
+                    label: 'Trabajador',
+                    color: 'bg-green-500 text-white',
+                    icon: <IconUser className="h-3 w-3" />
+                };
+            default:
+                return {
+                    label: 'Usuario',
+                    color: 'bg-gray-500 text-white',
+                    icon: <IconUser className="h-3 w-3" />
+                };
+        }
     };
 
     // Use authenticated user data if available, fallback to prop data
@@ -87,13 +95,15 @@ export function NavUser({
         name: authUser.fullName || authUser.userName,
         email: authUser.email || 'Sin email',
         avatar: user.avatar,
-        role: authUser.role || 'trabajador',
+        role: authUser.role || 'WORKER',
         status: authUser.status || 'activo'
     } : {
         ...user,
-        role: 'trabajador' as const,
+        role: 'WORKER' as const,
         status: 'activo' as const
     };
+
+    const roleDisplay = getRoleDisplay();
 
     return (
         <SidebarMenu>
@@ -111,22 +121,17 @@ export function NavUser({
                                         {generateAvatar(displayUser.name || 'Usuario')}
                                     </AvatarFallback>
                                 </Avatar>
-                                {/* Indicador de estado online/offline */}
-                                <div className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white ${
-                                    isOnline ? 'bg-green-500' : 'bg-gray-400'
-                                }`} />
+
                             </div>
                             <div className="grid flex-1 text-left text-sm leading-tight">
                                 <div className="flex items-center gap-2">
                                     <span className="truncate font-medium">{displayUser.name}</span>
-                                    {authUser && (
-                                        <Badge className={`text-xs px-1.5 py-0.5 ${getRoleColor(displayUser.role || 'trabajador')}`}>
-                                            <div className="flex items-center gap-1">
-                                                {getRoleIcon(displayUser.role || 'trabajador')}
-                                                {getRoleLabel(displayUser.role || 'trabajador')}
-                                            </div>
-                                        </Badge>
-                                    )}
+                                    <Badge className={`text-xs px-1.5 py-0.5 ${roleDisplay.color}`}>
+                                        <div className="flex items-center gap-1">
+                                            {roleDisplay.icon}
+                                            {roleDisplay.label}
+                                        </div>
+                                    </Badge>
                                 </div>
                                 <span className="text-muted-foreground truncate text-xs">
                                     {displayUser.email}
@@ -152,17 +157,15 @@ export function NavUser({
                                             {generateAvatar(displayUser.name || 'Usuario')}
                                         </AvatarFallback>
                                     </Avatar>
-                                    <div className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white ${
-                                        isOnline ? 'bg-green-500' : 'bg-gray-400'
-                                    }`} />
+
                                 </div>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
                                     <div className="flex items-center gap-2 mb-1">
                                         <span className="truncate font-medium">{displayUser.name}</span>
-                                        <Badge className={`text-xs px-1.5 py-0.5 ${getRoleColor(displayUser.role)}`}>
+                                        <Badge className={`text-xs px-1.5 py-0.5 ${roleDisplay.color}`}>
                                             <div className="flex items-center gap-1">
-                                                {getRoleIcon(displayUser.role)}
-                                                {getRoleLabel(displayUser.role)}
+                                                {roleDisplay.icon}
+                                                {roleDisplay.label}
                                             </div>
                                         </Badge>
                                     </div>
@@ -185,10 +188,6 @@ export function NavUser({
                             <DropdownMenuItem onClick={() => router.push('/dashboard/change-password')}>
                                 <IconKey />
                                 Cambiar contraseña
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => router.push('/dashboard/activity')}>
-                                <IconHistory />
-                                Historial de actividad
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />

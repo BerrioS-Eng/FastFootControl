@@ -11,14 +11,17 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { UserDTO } from '@/types/api';
-import { isAdminRole, ROLE_COLORS, ROLE_LABELS } from '@/lib/constants';
 import {
   Edit, 
   Trash2, 
   MoreHorizontal,
   Users,
   Shield,
-  User
+  User,
+  Crown,
+  Briefcase,
+  Eye,
+  Lock
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -26,6 +29,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { usePermissions } from '@/hooks/usePermissions';
 
 interface SimpleUserTableProps {
   users: UserDTO[];
@@ -33,24 +37,49 @@ interface SimpleUserTableProps {
   onDelete: (user: UserDTO) => void;
 }
 
-  export function SimpleUserTable({ users, onEdit, onDelete }: SimpleUserTableProps) {
-  const getRoleIcon = (role: string) => {
-    return isAdminRole(role) ? <Shield className="h-4 w-4" /> : <User className="h-4 w-4" />;
+export function SimpleUserTable({ users, onEdit, onDelete }: SimpleUserTableProps) {
+  const { hasPermission } = usePermissions();
+
+  const getRoleDisplay = (role: string) => {
+    switch (role) {
+      case 'ADMIN':
+        return {
+          label: 'Administrador',
+          color: 'bg-red-100 text-red-800 border-red-200',
+          icon: <Crown className="h-3 w-3" />
+        };
+      case 'MANAGER':
+        return {
+          label: 'Gerente',
+          color: 'bg-blue-100 text-blue-800 border-blue-200',
+          icon: <Briefcase className="h-3 w-3" />
+        };
+      case 'WORKER':
+        return {
+          label: 'Trabajador',
+          color: 'bg-green-100 text-green-800 border-green-200',
+          icon: <User className="h-3 w-3" />
+        };
+      default:
+        return {
+          label: 'Usuario',
+          color: 'bg-gray-100 text-gray-800 border-gray-200',
+          icon: <User className="h-3 w-3" />
+        };
+    }
   };
 
   const getRoleBadge = (role: string) => {
     if (!role) return null;
     
-    const isAdmin = isAdminRole(role);
-    const config = {
-      color: isAdmin ? ROLE_COLORS.ADMIN : ROLE_COLORS.WORKER,
-      label: isAdmin ? ROLE_LABELS.ADMIN : ROLE_LABELS.WORKER
-    };
+    const display = getRoleDisplay(role);
     
     return (
-      <Badge className={config.color}>
-        {getRoleIcon(role)}
-        <span className="ml-1">{config.label}</span>
+      <Badge className={`${display.color} border font-medium`}>
+        <div className="flex items-center gap-1">
+          {display.icon}
+          {display.label}
+        </div>
       </Badge>
     );
   };
@@ -89,17 +118,35 @@ interface SimpleUserTableProps {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => onEdit(user)}>
-                      <Edit className="mr-2 h-4 w-4" />
-                      Editar
+                    <DropdownMenuItem onClick={() => alert(`Ver detalles de ${user.fullName || user.userName}`)}>
+                      <Eye className="mr-2 h-4 w-4" />
+                      Ver detalles
                     </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => onDelete(user)}
-                      className="text-destructive"
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Eliminar
-                    </DropdownMenuItem>
+                    {hasPermission('canEditUsers') ? (
+                      <DropdownMenuItem onClick={() => onEdit(user)}>
+                        <Edit className="mr-2 h-4 w-4" />
+                        Editar
+                      </DropdownMenuItem>
+                    ) : (
+                      <DropdownMenuItem disabled>
+                        <Lock className="mr-2 h-4 w-4" />
+                        Editar (Sin permisos)
+                      </DropdownMenuItem>
+                    )}
+                    {hasPermission('canDeleteUsers') ? (
+                      <DropdownMenuItem 
+                        onClick={() => onDelete(user)}
+                        className="text-destructive"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Eliminar
+                      </DropdownMenuItem>
+                    ) : (
+                      <DropdownMenuItem disabled>
+                        <Lock className="mr-2 h-4 w-4" />
+                        Eliminar (Sin permisos)
+                      </DropdownMenuItem>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -163,17 +210,35 @@ interface SimpleUserTableProps {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => onEdit(user)}>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Editar
+                        <DropdownMenuItem onClick={() => alert(`Ver detalles de ${user.fullName || user.userName}`)}>
+                          <Eye className="mr-2 h-4 w-4" />
+                          Ver detalles
                         </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => onDelete(user)}
-                          className="text-destructive"
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Eliminar
-                        </DropdownMenuItem>
+                        {hasPermission('canEditUsers') ? (
+                          <DropdownMenuItem onClick={() => onEdit(user)}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            Editar
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem disabled>
+                            <Lock className="mr-2 h-4 w-4" />
+                            Editar (Sin permisos)
+                          </DropdownMenuItem>
+                        )}
+                        {hasPermission('canDeleteUsers') ? (
+                          <DropdownMenuItem 
+                            onClick={() => onDelete(user)}
+                            className="text-destructive"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Eliminar
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem disabled>
+                            <Lock className="mr-2 h-4 w-4" />
+                            Eliminar (Sin permisos)
+                          </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

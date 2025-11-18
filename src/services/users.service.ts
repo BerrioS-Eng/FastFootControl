@@ -61,7 +61,23 @@ export class UsersService {
 
   static async getAllUsers(): Promise<UserDTO[]> {
     try {
-      return await apiClient.get<UserDTO[]>(API_ENDPOINTS.USERS);
+      // La API devuelve datos paginados, pero para la lista completa queremos todos los usuarios
+      const response = await apiClient.get<{data: UserDTO[], meta: any}>(`${API_ENDPOINTS.USERS}?limit=1000`);
+      
+      // Si la respuesta tiene el formato paginado, extraer solo los datos
+      if (response && typeof response === 'object' && 'data' in response) {
+        console.log('📊 API Response (paginated):', response);
+        return response.data;
+      }
+      
+      // Si la respuesta es directamente un array (fallback)
+      if (Array.isArray(response)) {
+        console.log('📊 API Response (direct array):', response);
+        return response;
+      }
+      
+      console.warn('⚠️ Unexpected API response format:', response);
+      return [];
     } catch (error) {
       this.handleError(error, ERROR_MESSAGES.FETCH_ALL);
     }

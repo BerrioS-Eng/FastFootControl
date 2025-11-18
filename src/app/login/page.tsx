@@ -28,21 +28,37 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{
-      backgroundColor: '#F5D547',
-      backgroundImage: `
-        linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
-      `,
-      backgroundSize: '60px 60px'
-    }}>
-      <div className="w-full max-w-md">
-        <LoginForm
-          onSuccess={() => {
-            router.push('/dashboard');
-          }}
-        />
+    <div className="min-h-screen w-full overflow-hidden">
+      {/* Background con gradiente animado */}
+      <div className="absolute inset-0 bg-gradient-to-br from-orange-400 via-orange-500 to-orange-600">
+        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-white/20" />
+        <div className="absolute inset-0" style={{
+          backgroundImage: `
+            radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255,255,255,0.15) 0%, transparent 50%),
+            linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)
+          `,
+          backgroundSize: '100% 100%, 100% 100%, 60px 60px, 60px 60px'
+        }} />
       </div>
+
+      {/* Contenido principal */}
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div className="w-full max-w-sm sm:max-w-md lg:max-w-lg">
+          <LoginForm
+            onSuccess={() => {
+              router.push('/dashboard');
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Elementos decorativos flotantes */}
+      <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse" />
+      <div className="absolute bottom-10 right-10 w-32 h-32 bg-white/5 rounded-full blur-2xl animate-pulse delay-700" />
+      <div className="absolute top-1/2 left-4 w-16 h-16 bg-white/10 rounded-full blur-lg animate-bounce delay-300" />
+      <div className="absolute bottom-1/4 left-1/4 w-8 h-8 bg-white/20 rounded-full blur-sm animate-pulse delay-1000" />
     </div>
   );
 }

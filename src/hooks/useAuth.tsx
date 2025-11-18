@@ -82,14 +82,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const syncUserFromBackend = async () => {
-    if (!user?.userId) return;
+    // 🔓 Función desactivada temporalmente - autenticación deshabilitada para desarrollo
+    console.log('🔓 syncUserFromBackend disabled - Authentication is temporarily disabled for development');
+    return;
     
-    try {
-      const updatedUser = await UsersService.refreshCurrentUser(user.userId);
-      setUser(updatedUser);
-    } catch (error) {
-      console.error('Error syncing user from backend:', error);
-    }
+    // if (!user?.userId) return;
+    // 
+    // try {
+    //   const updatedUser = await UsersService.refreshCurrentUser(user.userId);
+    //   setUser(updatedUser);
+    // } catch (error) {
+    //   console.error('Error syncing user from backend:', error);
+    // }
   };
 
   return (
