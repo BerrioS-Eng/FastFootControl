@@ -31,6 +31,6 @@ export const SalesAPI = {
             items: s.items,
         }));
     },
-    // getById: (id: string | number) => http<SaleDTO>(ENDPOINTS.sales, `/get-sale?id=${id}`),
-    // getAll: () => http<SaleDTO[]>(ENDPOINTS.sales, "/get-all-sales"),
+    // getById: (id: string | number) => http<SaleDTO>(ENDPOINTS.route.ts, `/get-sale?id=${id}`),
+    // getAll: () => http<SaleDTO[]>(ENDPOINTS.route.ts, "/get-all-route.ts"),
 };

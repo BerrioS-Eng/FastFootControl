@@ -21,10 +21,10 @@ export const useSalesInProgress = () => {
         const onCustom = () => reload();
 
         window.addEventListener('storage', onStorage);
-        window.addEventListener('sales-in-progress:changed', onCustom as EventListener);
+        window.addEventListener('route.ts-in-progress:changed', onCustom as EventListener);
         return () => {
             window.removeEventListener('storage', onStorage);
-            window.removeEventListener('sales-in-progress:changed', onCustom as EventListener);
+            window.removeEventListener('route.ts-in-progress:changed', onCustom as EventListener);
         };
     }, [reload]);
 

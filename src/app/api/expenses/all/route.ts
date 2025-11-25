@@ -8,7 +8,7 @@ import type { ExpenseDTO } from "@/app/dashboard/expenses/types";
 // GET /api/expenses/all
 export async function GET() {
     try {
-        await ensureRole(["ADMIN", "WORKER"]);
+        await ensureRole(["ADMIN"]);
         const list = await httpBackend<ExpenseDTO[]>(ENDPOINTS.expenses, "/get-all-expenses", { method: "GET" });
         return NextResponse.json(list, { status: 200 });
     } catch (e) {

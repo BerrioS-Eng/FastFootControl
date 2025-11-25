@@ -12,6 +12,7 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
+import {formatCurrency} from "@/lib/utils";
 
 type Props = {
     data: ExpenseDTO[]
@@ -57,7 +58,7 @@ export default function ExpensesTable({ data, loading, onEdit, onDelete, canEdit
                                         {row.concept}
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        ${Number(row.totalPrice ?? 0).toFixed(2)}
+                                        {formatCurrency(Number(row.totalPrice), 'es-CO', 'COP')}
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">

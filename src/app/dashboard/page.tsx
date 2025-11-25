@@ -38,6 +38,13 @@ export default function PageDashboard() {
                 </Alert>
             )}
 
+            <Card>
+                <CardContent className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Resumen de actividad diaria</span>
+                    <span className="font-bold">{dateYmd}</span>
+                </CardContent>
+            </Card>
+
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card>
@@ -95,7 +102,7 @@ export default function PageDashboard() {
             {/* Tabla de ventas del día */}
             <Card>
                 <CardHeader>
-                    <CardTitle>Ventas de hoy</CardTitle>
+                    <CardTitle>Listado de ventas</CardTitle>
                 </CardHeader>
                 <CardContent>
                     {loading ? (

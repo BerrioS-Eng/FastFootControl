@@ -16,7 +16,7 @@ const Navbar = () => {
                 height={50}
             />
 
-            <BtnSession href='/dashboard'>Iniciar Sesión</BtnSession>
+            <BtnSession href='/login'>Iniciar Sesión</BtnSession>
         </div>
     )
 }

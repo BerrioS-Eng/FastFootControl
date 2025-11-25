@@ -93,7 +93,7 @@ export const SalesDraftProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             }
             setIsOpen(false);
             reload();
-            window.dispatchEvent(new Event('sales-in-progress:changed'));
+            window.dispatchEvent(new Event('route.ts-in-progress:changed'));
         } finally {
             setIsLoading(false);
             setTimeout(() => {

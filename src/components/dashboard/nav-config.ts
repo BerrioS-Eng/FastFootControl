@@ -1,13 +1,14 @@
 "use client"
 
-import type { Icon } from "@tabler/icons-react"
 import {
+    Icon,
+    IconUsers,
     IconDashboard,
     IconListDetails,
     IconReportMoney,
     IconChartBar,
 } from "@tabler/icons-react"
-import type { Role } from "@/lib/auth/types"
+import type {Role} from "@/lib/auth/types"
 
 export type NavItem = {
     title: string
@@ -17,11 +18,12 @@ export type NavItem = {
 }
 
 export const navMain: NavItem[] = [
-    { title: "Panel", url: "/dashboard", icon: IconDashboard },
-    { title: "Ventas", url: "/dashboard/sales", icon: IconChartBar, roles: ["ADMIN", "WORKER"] },
-    { title: "Productos", url: "/dashboard/products", icon: IconListDetails, roles: ["ADMIN", "WORKER"] },
-    { title: "Gastos", url: "/dashboard/expenses", icon: IconReportMoney, roles: ["ADMIN", "WORKER"] },
-    { title: "Reportes", url: "/dashboard/reports", icon: IconChartBar, roles: ["ADMIN"] },
+    {title: "Panel", url: "/dashboard", icon: IconDashboard, roles: ["ADMIN", "WORKER"]},
+    {title: "Ventas", url: "/dashboard/sales", icon: IconChartBar, roles: ["ADMIN", "WORKER"]},
+    {title: "Productos", url: "/dashboard/products", icon: IconListDetails, roles: ["ADMIN"]},
+    {title: "Gastos", url: "/dashboard/expenses", icon: IconReportMoney, roles: ["ADMIN"]},
+    {title: "Reportes", url: "/dashboard/reports", icon: IconChartBar, roles: ["ADMIN"]},
+    {title: "Usuarios", url: "/dashboard/users", icon: IconUsers, roles: ["ADMIN"]},
 ]
 
 export function filterNavItemsByRole(items: NavItem[], role: Role | undefined) {

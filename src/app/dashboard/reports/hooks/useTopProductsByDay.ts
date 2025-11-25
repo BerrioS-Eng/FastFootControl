@@ -1,28 +1,16 @@
 "use client";
 import React from "react";
 import type { TopProduct } from "@/app/dashboard/reports/types";
-import { reportsService } from "@/app/dashboard/reports/services/reports.services";
+import { useTopProducts } from "./useTopProducts";
 
 export function useTopProductsByDay(dateYmd: string, topNumber = 2) {
-    const [data, setData] = React.useState<TopProduct[] | null>(null);
-    const [loading, setLoading] = React.useState(true);
-    const [error, setError] = React.useState<string | null>(null);
+    // Reutilizamos el hook genérico forzando start=end
+    const { data, loading, error } = useTopProducts({
+        startDate: dateYmd,
+        endDate: dateYmd,
+        topNumber,
+        enabled: Boolean(dateYmd),
+    });
 
-    React.useEffect(() => {
-        let on = true;
-        (async () => {
-            try {
-                setLoading(true);
-                const res = await reportsService.getTopProductsByDay(dateYmd, topNumber);
-                if (on) setData(res);
-            } catch (e: any) {
-                setError(e?.message ?? "Error cargando top de productos");
-            } finally {
-                if (on) setLoading(false);
-            }
-        })();
-        return () => { on = false; };
-    }, [dateYmd, topNumber]);
-
-    return { data, loading, error };
+    return { data: (data as TopProduct[] | null), loading, error };
 }

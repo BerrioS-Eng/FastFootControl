@@ -190,8 +190,12 @@ export const SaleForm: React.FC<{ initialValues?: Partial<SaleFormData> }> = ({i
                         </Button>
                     )}
                     {isEditing && (
-                        <Button className="btn btn-destructive w-full sm:w-auto" variant="destructive"
-                                onClick={deleteCurrent}>
+                        <Button
+                            type="button"
+                            className="btn btn-destructive w-full sm:w-auto"
+                            variant="destructive"
+                            onClick={deleteCurrent}
+                        >
                             Eliminar
                         </Button>
                     )}

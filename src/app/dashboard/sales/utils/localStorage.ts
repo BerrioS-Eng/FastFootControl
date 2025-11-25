@@ -26,12 +26,12 @@ export const saveSaleInProgress = (sale: SaleInProgress) => {
     const sales = loadSalesInProgress();
     const updated = [...sales.filter(s => s.id !== sale.id), sale];
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    window.dispatchEvent(new Event('sales-in-progress:changed'));
+    window.dispatchEvent(new Event('route.ts-in-progress:changed'));
 };
 
 export const removeSaleInProgress = (id: string) => {
     if (typeof window === "undefined") return;
     const sales = loadSalesInProgress().filter((s) => s.id !== id);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(sales));
-    window.dispatchEvent(new Event('sales-in-progress:changed'));
+    window.dispatchEvent(new Event('route.ts-in-progress:changed'));
 };

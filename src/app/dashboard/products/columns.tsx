@@ -1,8 +1,8 @@
 "use client";
-import { useState } from "react";
-import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import {useState} from "react";
+import {ColumnDef} from "@tanstack/react-table";
+import {MoreHorizontal} from "lucide-react";
+import {Button} from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,9 +12,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DeleteProduct from "./components/DeleteProduct";
-import { Product } from "./types";
+import {Product} from "./types";
 
-export const columns = ({ onEdit }: { onEdit: (id: number) => void }): ColumnDef<Product>[] => [
+export const columns = ({onEdit}: { onEdit: (id: number) => void }): ColumnDef<Product>[] => [
     {
         accessorKey: "name",
         header: "Nombre producto",
@@ -33,7 +33,7 @@ export const columns = ({ onEdit }: { onEdit: (id: number) => void }): ColumnDef
     },
     {
         id: "actions",
-        cell: ({ row }) => {
+        cell: ({row}) => {
             const product = row.original;
             const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
@@ -44,7 +44,7 @@ export const columns = ({ onEdit }: { onEdit: (id: number) => void }): ColumnDef
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0">
                                 <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
+                                <MoreHorizontal className="h-4 w-4"/>
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -54,7 +54,7 @@ export const columns = ({ onEdit }: { onEdit: (id: number) => void }): ColumnDef
                             >
                                 Copiar ID del producto
                             </DropdownMenuItem>
-                            <DropdownMenuSeparator />
+                            <DropdownMenuSeparator/>
                             <DropdownMenuItem
                                 onClick={() => onEdit(product.id)}
                             >

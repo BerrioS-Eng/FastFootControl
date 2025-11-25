@@ -12,6 +12,8 @@ import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
+import {IconArrowNarrowLeft} from '@tabler/icons-react';
+import Image from "next/image";
 
 type LoginRouteResponse = { user: UserLoginResponse };
 type FormValues = z.infer<typeof LoginSchema>;
@@ -46,16 +48,23 @@ export default function LoginPage() {
              style={{
                  backgroundColor: '#F5D547',
                  backgroundImage: `
-        linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+            linear-gradient(rgba(255, 255, 255, 0.6) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.6) 1px, transparent 1px)
       `,
                  backgroundSize: '60px 60px'
              }}
         >
             <Card className="w-full max-w-sm">
-                <CardHeader>
-                    <CardTitle>Iniciar sesión</CardTitle>
-                    <CardDescription>Accede a tu cuenta para continuar</CardDescription>
+                <Image src="/logo.png" alt="Logo" width={60} height={60} className="mx-auto"/>
+                <CardHeader className="flex items-start justify-start">
+                    <div>
+                        <IconArrowNarrowLeft className="h-6 w-6 text-[#FB8C00] cursor-pointer border-2 rounded-2xl"
+                                             onClick={() => router.push("/")}/>
+                    </div>
+                    <div>
+                        <CardTitle>Iniciar sesión</CardTitle>
+                        <CardDescription>Accede a tu cuenta para continuar</CardDescription>
+                    </div>
                 </CardHeader>
                 <CardContent>
                     {error ? (
@@ -96,7 +105,8 @@ export default function LoginPage() {
                                 )}
                             />
 
-                            <Button type="submit" className="w-full bg-[#FB8C00]" disabled={form.formState.isSubmitting}>
+                            <Button type="submit" className="w-full bg-[#FB8C00]"
+                                    disabled={form.formState.isSubmitting}>
                                 {form.formState.isSubmitting ? "Iniciando..." : "Iniciar sesión"}
                             </Button>
                         </form>
