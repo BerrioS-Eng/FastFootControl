@@ -1,16 +1,25 @@
-import { ENDPOINTS } from '@/lib/config';
+import {ENDPOINTS} from '@/lib/config';
 
 export async function http<T>(baseUrl: string, input: string, init?: RequestInit): Promise<T> {
     const res = await fetch(`${baseUrl}${input}`, {
         ...init,
         headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             ...(init?.headers || {}),
         },
-        cache: 'no-store',
+        cache: "no-store",
     });
+
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error((data as any)?.message ?? `HTTP ${res.status}`);
+
+    if (!res.ok) {
+        const message = (data as any)?.message ?? `HTTP ${res.status}`;
+        const error: any = new Error(message);
+        error.status = res.status; //
+        error.body = data;         //
+        throw error;
+    }
+
     return data as T;
 }
 

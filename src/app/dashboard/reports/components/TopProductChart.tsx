@@ -42,11 +42,17 @@ export function TopProductsChart({
     }));
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Top productos (gráfico)</CardTitle>
+        <Card
+            className="border border-border/60 shadow-sm hover:shadow-md transition-shadow bg-gradient-to-b from-background to-muted/40">
+            <CardHeader className="pb-2">
+                <CardTitle className="text-base font-semibold tracking-tight">
+                    Top productos (gráfico)
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">
+                    Productos con mayor valor de ventas en el rango seleccionado.
+                </p>
             </CardHeader>
-            <CardContent className="h-80">
+            <CardContent className="h-80 pt-0">
                 {loading ? (
                     <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
                         Cargando gráfica...
@@ -64,7 +70,7 @@ export function TopProductsChart({
                                 nameKey="name"
                                 cx="50%"
                                 cy="50%"
-                                innerRadius={60} // dona
+                                innerRadius={60}
                                 outerRadius={100}
                                 paddingAngle={3}
                             >

@@ -8,10 +8,10 @@ export function toCostItems(input: ProductDTO['ingredients'] | ProductDTO['direc
         const first = input[0] as any;
         // Si ya son objetos con name/cost
         if (first && typeof first === 'object' && 'name' in first) {
-            return (input as any[]).map((it) => ({ name: String(it.name ?? ''), cost: Number(it.cost ?? 0) }));
+            return (input as any[]).map((it) => ({name: String(it.name ?? ''), cost: Number(it.cost ?? 0)}));
         }
         // Si son strings
-        return (input as string[]).map((s) => ({ name: String(s), cost: 0 }));
+        return (input as string[]).map((s) => ({name: String(s), cost: 0}));
     }
     return [];
 }
@@ -49,18 +49,22 @@ export function toCreateRequest(input: {
     };
 }
 
-export function toEditRequest(input: Partial<{
-    name: string;
-    ingredients: CostItem[];
-    directCosts: CostItem[];
-    labour: number;
-    profitMargin: number;
-}>): ProductEditRequest {
+export function toEditRequest(
+    input: Partial<{
+        name: string;
+        ingredients: CostItem[];
+        directCosts: CostItem[];
+        labour: number;
+        profitMargin: number;
+        netPrice: number;
+    }>,
+): ProductEditRequest {
     return {
         productName: input.name,
         ingredients: input.ingredients,
         directCosts: input.directCosts,
         labour: input.labour,
         profitMargin: input.profitMargin,
+        netPrice: input.netPrice,
     };
 }

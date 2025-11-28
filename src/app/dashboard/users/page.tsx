@@ -13,35 +13,16 @@ import {IconUsers, IconAlertTriangle, IconPlus} from "@tabler/icons-react";
 import {toast} from "sonner";
 
 export default function UsersPage() {
-    const {role} = useAuth(); // Role = "ADMIN" | "WORKER" | undefined
-    const [users, setUsers] = useState<UserDTO[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isCreateOpen, setIsCreateOpen] = useState(false);
-    const [editingUser, setEditingUser] = useState<UserDTO | null>(null);
-    const [deletingUser, setDeletingUser] = useState<UserDTO | null>(null);
-
+    const {role, authLoading} = useAuth(); // Role = "ADMIN" | "WORKER" | undefined
     const isAdmin = role === "ADMIN";
 
-    const loadUsers = async () => {
-        try {
-            setIsLoading(true);
-            const data = await UsersService.getAllUsers();
-            setUsers(data);
-        } catch (error) {
-            console.error(error);
-            toast.error("No se pudieron cargar los usuarios");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        if (isAdmin) {
-            loadUsers();
-        } else {
-            setIsLoading(false);
-        }
-    }, [isAdmin]);
+    if (authLoading) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <div className="h-10 w-10 border-2 border-primary border-b-transparent rounded-full animate-spin"/>
+            </div>
+        );
+    }
 
     if (!isAdmin) {
         return (
@@ -60,30 +41,81 @@ export default function UsersPage() {
         );
     }
 
+    // Solo ADMIN llega aquí
+    return <UsersAdminContent/>;
+}
+
+function UsersAdminContent() {
+    const [users, setUsers] = useState<UserDTO[]>([]);
+    const [usersLoading, setUsersLoading] = useState(true);
+    const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [editingUser, setEditingUser] = useState<UserDTO | null>(null);
+    const [deletingUser, setDeletingUser] = useState<UserDTO | null>(null);
+
+    const loadUsers = async () => {
+        try {
+            setUsersLoading(true);
+            const data = await UsersService.getAllUsers();
+            setUsers(data);
+        } catch (error) {
+            console.error(error);
+            toast.error("No se pudieron cargar los usuarios");
+        } finally {
+            setUsersLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        void loadUsers();
+    }, []);
+
+    const totalUsers = users.length;
+    const admins = users.filter((u) => u.role === "ADMIN").length;
+    const workers = users.filter((u) => u.role === "WORKER").length;
+
     return (
-        <div className="px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-orange-100 flex items-center justify-center">
-                        <IconUsers className="h-6 w-6 text-orange-600"/>
+        <div className="p-4 sm:px-6 space-y-6">
+            {/* Hero */}
+            <div
+                className="relative overflow-hidden w-full rounded-3xl bg-gradient-to-r from-[#FF9800] to-[#FF3D00] text-white shadow-lg px-6 py-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                {/* círculo decorativo */}
+                <div className="pointer-events-none absolute -bottom-16 -right-16 h-40 w-40 rounded-full bg-white/10"/>
+                <div className="relative z-10 flex items-start gap-3">
+                    <div className="hidden sm:flex h-10 w-10 rounded-full bg-white/20 items-center justify-center my-auto">
+                        <IconUsers className="h-5 w-5"/>
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold tracking-tight">Gestión de usuarios</h1>
-                        <p className="text-sm text-muted-foreground">
-                            Administra las cuentas de acceso al sistema.
+                        <p className="text-sm opacity-90 mb-1">Administración</p>
+                        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
+                            Gestión de usuarios
+                        </h1>
+                        <p className="text-sm md:text-base opacity-90">
+                            Administra las cuentas de acceso y roles del sistema.
                         </p>
+                        <div className="mt-3 flex flex-wrap gap-3 text-xs sm:text-sm">
+                            <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-1 font-semibold">
+                                {totalUsers} usuario{totalUsers === 1 ? "" : "s"}
+                            </span>
+                            <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-1 font-semibold">
+                                {admins} ADMIN • {workers} WORKER
+                            </span>
+                        </div>
                     </div>
                 </div>
 
-                <Button onClick={() => setIsCreateOpen(true)} className="self-start">
-                    <IconPlus className="h-4 w-4 mr-2"/>
-                    Nuevo usuario
-                </Button>
+                <div className="relative z-10 flex flex-col items-start md:items-end gap-2">
+                    <Button
+                        onClick={() => setIsCreateOpen(true)}
+                        className="mt-1 bg-white text-[#F4511E] cursor-pointer hover:bg-orange-50 font-semibold px-4 py-2 rounded-full shadow-sm flex items-center gap-2"
+                    >
+                        <IconPlus className="h-4 w-4"/>
+                        Nuevo usuario
+                    </Button>
+                </div>
             </div>
 
             {/* Contenido */}
-            {isLoading ? (
+            {usersLoading ? (
                 <div className="flex items-center justify-center h-64">
                     <div className="h-10 w-10 border-2 border-primary border-b-transparent rounded-full animate-spin"/>
                 </div>

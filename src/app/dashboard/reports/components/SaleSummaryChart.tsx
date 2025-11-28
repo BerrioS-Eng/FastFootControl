@@ -25,11 +25,17 @@ export function SalesSummaryChart({data, loading}: SalesSummaryChartProps) {
     }));
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Ventas diarias (gráfico)</CardTitle>
+        <Card
+            className="border border-border/60 shadow-sm hover:shadow-md transition-shadow bg-gradient-to-b from-background to-muted/40">
+            <CardHeader className="pb-2">
+                <CardTitle className="text-base font-semibold tracking-tight">
+                    Ventas diarias (gráfico)
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">
+                    Evolución diaria de ventas y pedidos.
+                </p>
             </CardHeader>
-            <CardContent className="h-80">
+            <CardContent className="h-80 pt-0">
                 {loading ? (
                     <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
                         Cargando gráfica...
@@ -78,7 +84,7 @@ export function SalesSummaryChart({data, loading}: SalesSummaryChartProps) {
                                 type="monotone"
                                 dataKey="totalSales"
                                 name="Ventas"
-                                stroke="#10b981" // emerald-500
+                                stroke="#10b981"
                                 strokeWidth={2}
                                 dot={false}
                             />
@@ -87,7 +93,7 @@ export function SalesSummaryChart({data, loading}: SalesSummaryChartProps) {
                                 type="monotone"
                                 dataKey="totalOrders"
                                 name="Pedidos"
-                                stroke="#3b82f6" // blue-500
+                                stroke="#3b82f6"
                                 strokeWidth={2}
                                 dot={{r: 2}}
                             />

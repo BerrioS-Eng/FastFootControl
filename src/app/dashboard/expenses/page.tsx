@@ -6,7 +6,7 @@ import {IconAlertTriangle} from "@tabler/icons-react";
 export default async function ExpensesPage() {
     const user = await getCurrentUser();
     if (!user) redirect("/login");
-    if (user.role === "ADMIN") {
+    if (user.role !== "ADMIN") {
         return (
             <div className="px-4 sm:px-6 lg:px-8 py-6">
                 <div className="max-w-md mx-auto bg-white rounded-lg border shadow-sm p-6 flex flex-col gap-3">
@@ -23,7 +23,7 @@ export default async function ExpensesPage() {
         );
     }
     return (
-        <div className='mx-8 my-6 flex flex-col gap-5'>
+        <div className='p-4 flex flex-col gap-5'>
             <ExpensesModule role={user.role}/>
         </div>
     )

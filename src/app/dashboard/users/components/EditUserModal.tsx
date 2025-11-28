@@ -129,11 +129,19 @@ export function EditUserModal({open, onOpenChange, user, onUpdated}: Props) {
                             />
 
                             <div className="flex justify-end gap-2 pt-2">
-                                <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}
-                                        disabled={isSubmitting}>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    onClick={() => onOpenChange(false)}
+                                    disabled={isSubmitting}
+                                >
                                     Cancelar
                                 </Button>
-                                <Button type="submit" disabled={isSubmitting}>
+                                <Button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="bg-[#FB8C00] hover:bg-[#f57c00]"
+                                >
                                     {isSubmitting ? "Guardando..." : "Guardar cambios"}
                                 </Button>
                             </div>

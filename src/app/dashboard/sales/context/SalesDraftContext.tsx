@@ -86,7 +86,7 @@ export const SalesDraftProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         }
         try {
             setIsLoading(true);
-            console.log('submit formData', toSaleRequest(formData));
+            //console.log('submit formData', toSaleRequest(formData));
             await salesService.register(toSaleRequest(formData));
             if (formData.id) {
                 remove(formData.id);

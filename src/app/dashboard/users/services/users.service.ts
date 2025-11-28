@@ -1,45 +1,26 @@
-import type { UserCreateRequest, UserDTO, UserEditRequest } from "@/app/dashboard/users/types";
-import {ENDPOINTS} from "@/lib/config";
-import {http} from "@/lib/api/http";
-import {UserLoginResponse} from "@/lib/auth/types";
+import type { UserCreateRequest, UserDTO, UserEditRequest } from "@/lib/auth/types";
+import { UsersAPI } from "@/app/dashboard/users/api/users";
 
 export const UsersService = {
     async getAllUsers(): Promise<UserDTO[]> {
-        return http<UserDTO[]>(ENDPOINTS.users, "/get-all-users", {
-            method: "GET",
-        });
+        return UsersAPI.getAll();
     },
 
     async getUserById(userId: number): Promise<UserDTO> {
-        return http<UserDTO>(ENDPOINTS.users, `/get-user?userId=${userId}`, {
-            method: "GET",
-        });
+        return UsersAPI.getById(userId);
     },
 
     async createUser(payload: UserCreateRequest): Promise<UserDTO> {
-        return http<UserDTO>(ENDPOINTS.users, "/create-user", {
-            method: "POST",
-            body: JSON.stringify(payload),
-        });
+        return UsersAPI.create(payload);
     },
 
     async editUser(userId: number, payload: UserEditRequest): Promise<UserDTO> {
-        return http<UserDTO>(ENDPOINTS.users, `/edit-user?userId=${userId}`, {
-            method: "PUT",
-            body: JSON.stringify(payload),
-        });
+        return UsersAPI.edit(userId, payload);
     },
 
     async deleteUser(userId: number): Promise<string> {
-        return http<string>(ENDPOINTS.users, `/delete-user?userId=${userId}`, {
-            method: "DELETE",
-        });
+        return UsersAPI.delete(userId);
     },
 
-    async getCurrentUser(): Promise<UserLoginResponse> {
-        return http<UserLoginResponse>(ENDPOINTS.users, "/me", {
-            method: "GET",
-            // Tu helper http debería adjuntar automáticamente el Authorization: Bearer <token>
-        });
-    },
+    getCurrent: () => UsersAPI.currentUser(),
 };

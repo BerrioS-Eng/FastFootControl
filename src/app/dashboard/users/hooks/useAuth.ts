@@ -1,17 +1,16 @@
-'use client';
-import { useEffect, useState } from 'react';
-import type { Role, UserLoginResponse } from '@/lib/auth/types';
+import { useEffect, useState } from "react";
+import type { UserLoginResponse, Role } from "@/lib/auth/types";
 
 export function useAuth() {
     const [user, setUser] = useState<UserLoginResponse | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [authLoading, setAuthLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         let cancelled = false;
         const load = async () => {
             try {
-                const res = await fetch('/api/auth/me', { cache: 'no-store' });
+                const res = await fetch("/api/auth/me", { cache: "no-store" });
                 if (!res.ok) {
                     if (!cancelled) setUser(null);
                     return;
@@ -21,7 +20,7 @@ export function useAuth() {
             } catch (e) {
                 if (!cancelled) setError((e as Error).message);
             } finally {
-                if (!cancelled) setLoading(false);
+                if (!cancelled) setAuthLoading(false);
             }
         };
         load();
@@ -31,5 +30,5 @@ export function useAuth() {
     }, []);
 
     const role = user?.role as Role | undefined;
-    return { user, role, loading, error };
+    return { user, role, authLoading, error };
 }

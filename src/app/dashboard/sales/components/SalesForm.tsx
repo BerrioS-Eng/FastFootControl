@@ -10,6 +10,7 @@ import {ProductsTable} from "./ProductsTable";
 import {saleFormSchema, type SaleFormData} from "@/app/dashboard/sales/types";
 import {useSalesDraft} from "@/app/dashboard/sales/context/SalesDraftContext";
 import {formatCurrency} from "@/lib/utils";
+import {toast} from "sonner";
 
 
 // Utilidades para convertir a/desde datetime-local
@@ -55,7 +56,19 @@ export const SaleForm: React.FC<{ initialValues?: Partial<SaleFormData> }> = ({i
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit((values) => submit(values))} className="space-y-4" noValidate>
+            <form
+                onSubmit={form.handleSubmit(async (values) => {
+                    try {
+                        await submit(values);
+                        toast.success("Venta registrada correctamente");
+                    } catch (error: any) {
+                        console.error(error);
+                        toast.error(error?.message ?? "No se pudo registrar la venta");
+                    }
+                })}
+                className="space-y-4"
+                noValidate
+            >
                 {/* Cabecera en grid responsiva */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* saleDate */}

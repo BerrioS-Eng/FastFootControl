@@ -1,6 +1,6 @@
 import React from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { MonthlySales } from "@/app/dashboard/reports/types";
+import {Card, CardHeader, CardTitle, CardContent} from "@/components/ui/card";
+import {MonthlySales} from "@/app/dashboard/reports/types";
 import {
     BarChart,
     Bar,
@@ -16,18 +16,24 @@ interface MonthlySalesChartProps {
     loading: boolean;
 }
 
-export function MonthlySalesChart({ data, loading }: MonthlySalesChartProps) {
+export function MonthlySalesChart({data, loading}: MonthlySalesChartProps) {
     const chartData = (data ?? []).map((m) => ({
         period: `${m.year}-${String(m.month).padStart(2, "0")}`,
         totalSales: Number(m.totalSales),
     }));
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Ventas mensuales (gráfico)</CardTitle>
+        <Card
+            className="border border-border/60 shadow-sm hover:shadow-md transition-shadow bg-gradient-to-b from-background to-muted/40">
+            <CardHeader className="pb-2">
+                <CardTitle className="text-base font-semibold tracking-tight">
+                    Ventas mensuales (gráfico)
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">
+                    Total de ventas agrupadas por mes.
+                </p>
             </CardHeader>
-            <CardContent className="h-80">
+            <CardContent className="h-80 pt-0">
                 {loading ? (
                     <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
                         Cargando gráfica...
@@ -39,10 +45,10 @@ export function MonthlySalesChart({ data, loading }: MonthlySalesChartProps) {
                 ) : (
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={chartData}>
-                            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                            <XAxis dataKey="period" tick={{ fontSize: 12 }} tickMargin={8} />
+                            <CartesianGrid strokeDasharray="3 3" className="stroke-muted"/>
+                            <XAxis dataKey="period" tick={{fontSize: 12}} tickMargin={8}/>
                             <YAxis
-                                tick={{ fontSize: 12 }}
+                                tick={{fontSize: 12}}
                                 tickFormatter={(v) => v.toLocaleString("es-CO")}
                             />
                             <Tooltip
@@ -57,7 +63,7 @@ export function MonthlySalesChart({ data, loading }: MonthlySalesChartProps) {
                             <Bar
                                 dataKey="totalSales"
                                 name="Ventas"
-                                fill="#6366f1" // indigo-500
+                                fill="#6366f1"
                                 radius={[4, 4, 0, 0]}
                             />
                         </BarChart>

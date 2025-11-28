@@ -22,6 +22,7 @@ export interface ProductCreateRequest {
 
 export interface ProductEditRequest {
     productName?: string;
+    netPrice?: number;
     ingredients?: CostItemDTO[];
     directCosts?: CostItemDTO[];
     labour?: number;

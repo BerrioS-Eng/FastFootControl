@@ -17,15 +17,3 @@ export async function getCurrentUser(): Promise<UserLoginResponse | null> {
         return null;
     }
 }
-
-export function hasRole(user: { role?: Role } | null | undefined, roles: Role | Role[]): boolean {
-    if (!user?.role) return false;
-    const list = Array.isArray(roles) ? roles : [roles];
-    return list.includes(user.role);
-}
-
-export async function requireRole(roles: Role | Role[]) {
-    const user = await getCurrentUser();
-    if (!hasRole(user, roles)) return null; // el caller decide redirigir
-    return user;
-}
