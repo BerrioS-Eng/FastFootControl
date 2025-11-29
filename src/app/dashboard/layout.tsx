@@ -7,11 +7,11 @@ import {
 import { AppSidebar } from '@/components/dashboard/app-sidebar';
 import { SiteHeader } from '@/components/dashboard/site-header';
 import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/auth/server";
+import {getServerAuthSession} from "@/lib/auth/auth";
 
 export default async function DashboardLayout({children}: { children: React.ReactNode }) {
-    const user = await getCurrentUser();
-    if (!user) redirect("/login");
+    const session = await getServerAuthSession();
+    if (!session) redirect("/login");
     return (
         <SidebarProvider
             style={
@@ -21,7 +21,7 @@ export default async function DashboardLayout({children}: { children: React.Reac
                 } as React.CSSProperties
             }
         >
-            <AppSidebar variant='inset' user={user}/>
+            <AppSidebar variant='inset' user={session.user}/>
             <SidebarInset>
                 <SiteHeader />
                 {children}

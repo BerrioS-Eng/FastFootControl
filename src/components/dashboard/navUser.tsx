@@ -22,16 +22,12 @@ import {
 import {IconDotsVertical, IconLogout, IconUserCircle} from "@tabler/icons-react"
 import Link from "next/link";
 import {UserLoginResponse} from "@/lib/auth/types";
-import {useRouter} from "next/navigation";
+import {useLogout} from "@/hooks/useLogout";
 
-export function NavUser({ user }: { user: UserLoginResponse | null }) {
-    const { isMobile } = useSidebar();
-    const router = useRouter();
+export function NavUser({user}: { user: UserLoginResponse | null }) {
+    const {isMobile} = useSidebar();
 
-    const handleLogout = async () => {
-        await fetch("/api/auth/logout", { method: "POST" });
-        router.replace("/login");
-    }
+    const {logout, isLoggingOut} = useLogout("/login");
 
     return (
         <SidebarMenu>
@@ -43,14 +39,14 @@ export function NavUser({ user }: { user: UserLoginResponse | null }) {
                             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                         >
                             <Avatar className="h-8 w-8 rounded-lg grayscale">
-                                <AvatarImage src={"/logo.png"} alt={user?.userName} />
+                                <AvatarImage src={"/logo.png"} alt={user?.userName}/>
                                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                             </Avatar>
                             <div className="grid flex-1 text-left text-sm leading-tight">
                                 <span className="truncate font-medium">{user?.userName}</span>
                                 <span className="text-muted-foreground truncate text-xs">{user?.role}</span>
                             </div>
-                            <IconDotsVertical className="ml-auto size-4" />
+                            <IconDotsVertical className="ml-auto size-4"/>
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
@@ -62,7 +58,7 @@ export function NavUser({ user }: { user: UserLoginResponse | null }) {
                         <DropdownMenuLabel className="p-0 font-normal">
                             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                                 <Avatar className="h-8 w-8 rounded-lg">
-                                    <AvatarImage src={"/logo.png"} alt={user?.userName} />
+                                    <AvatarImage src={"/logo.png"} alt={user?.userName}/>
                                     <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                                 </Avatar>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -70,19 +66,24 @@ export function NavUser({ user }: { user: UserLoginResponse | null }) {
                                 </div>
                             </div>
                         </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
+                        <DropdownMenuSeparator/>
                         <DropdownMenuGroup>
                             <DropdownMenuItem>
-                                <IconUserCircle />
+                                <IconUserCircle/>
                                 <Link href={"/dashboard/account"} key={"account"}>
                                     Cuenta
                                 </Link>
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer" key={"logout"}>
-                            <IconLogout />
-                            Salir
+                        <DropdownMenuSeparator/>
+                        <DropdownMenuItem
+                            onClick={() => logout()}
+                            className="cursor-pointer"
+                            key={"logout"}
+                            disabled={isLoggingOut}
+                        >
+                            <IconLogout/>
+                            Cerrar sesión
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

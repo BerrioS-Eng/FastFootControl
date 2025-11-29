@@ -1,76 +1,29 @@
-"use client";
-
-import {useEffect, useState} from "react";
-import {UsersService} from "@/app/dashboard/users/services/users.service";
-import type {UserLoginResponse} from "@/lib/auth/types";
-import {Card, CardHeader, CardTitle, CardDescription, CardContent} from "@/components/ui/card";
-import {Avatar, AvatarFallback} from "@/components/ui/avatar";
-import {Button} from "@/components/ui/button";
+import {redirect} from "next/navigation";
+import {getServerAuthSession} from "@/lib/auth/auth";
 import {
-    IconUser,
-    IconShieldCheck,
-    IconId,
-    IconRefresh,
-} from "@tabler/icons-react";
-import {toast} from "sonner";
+    Card,
+    CardHeader,
+    CardTitle,
+    CardContent,
+} from "@/components/ui/card";
+import {Avatar, AvatarFallback} from "@/components/ui/avatar";
+import {IconUser, IconShieldCheck, IconId} from "@tabler/icons-react";
 import BadgeTagRole from "@/components/ui/BadgeTagRole";
 
-export default function AccountPage() {
-    const [user, setUser] = useState<UserLoginResponse | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+function generateAvatar(userName: string | undefined) {
+    if (!userName) return "U";
+    return userName.slice(0, 2).toUpperCase();
+}
 
-    const loadMe = async () => {
-        try {
-            setIsLoading(true);
-            const me = await UsersService.getCurrent();
-            setUser((me as any).user);
-        } catch (error) {
-            console.error(error);
-            toast.error("No se pudo obtener la información de la cuenta");
-        } finally {
-            setIsLoading(false);
-        }
-    };
+export default async function AccountPage() {
+    const session = await getServerAuthSession();
 
-    useEffect(() => {
-        loadMe();
-    }, []);
-
-    const generateAvatar = (userName: string | undefined) => {
-        if (!userName) return "U";
-        return userName
-            .slice(0, 2)
-            .toUpperCase();
-    };
-
-    if (isLoading) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <div className="h-10 w-10 border-2 border-primary border-b-transparent rounded-full animate-spin"/>
-            </div>
-        );
+    if (!session || !session.user) {
+        // Si no hay sesión, lo mandamos a login
+        redirect("/login");
     }
 
-    if (!user) {
-        return (
-            <div className="px-4 sm:px-6 lg:px-8 py-6">
-                <Card className="max-w-md mx-auto">
-                    <CardHeader>
-                        <CardTitle>Error al cargar la cuenta</CardTitle>
-                        <CardDescription>
-                            No se pudo obtener la información del usuario actual.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex justify-end">
-                        <Button onClick={loadMe} variant="outline">
-                            <IconRefresh className="h-4 w-4 mr-2"/>
-                            Reintentar
-                        </Button>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
+    const user = session.user;
 
     return (
         <div className="px-4 sm:px-6 lg:px-8 py-6">
@@ -105,15 +58,16 @@ export default function AccountPage() {
                         <div className="flex items-center gap-2 text-sm">
                             <IconId className="h-4 w-4 text-muted-foreground"/>
                             <span className="text-muted-foreground">
-                Identificador interno: <span className="font-mono">{user.userId}</span>
-            </span>
+                                Identificador interno:{" "}
+                                <span className="font-mono">{user.userId}</span>
+                            </span>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
                             <IconShieldCheck className="h-4 w-4 text-muted-foreground"/>
                             <span className="text-muted-foreground flex items-center gap-2">
-                Rol en el sistema:
+                                Rol en el sistema:
                                 <BadgeTagRole role={user.role}/>
-            </span>
+                            </span>
                         </div>
                     </CardContent>
                 </Card>

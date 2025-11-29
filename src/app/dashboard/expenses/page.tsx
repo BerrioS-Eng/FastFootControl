@@ -1,12 +1,19 @@
 import ExpensesModule from "./components/ExpensesModule";
 import {redirect} from "next/navigation";
-import {getCurrentUser} from "@/lib/auth/server";
 import {IconAlertTriangle} from "@tabler/icons-react";
+import {getServerAuthSession} from "@/lib/auth/auth";
+import {Role} from "@/lib/auth/types";
 
 export default async function ExpensesPage() {
-    const user = await getCurrentUser();
-    if (!user) redirect("/login");
-    if (user.role !== "ADMIN") {
+    const session = await getServerAuthSession();
+
+    // Si no hay sesión, redirigimos a login
+    if (!session) redirect("/login");
+
+    const role = session.user.role as Role;
+
+    // Solo ADMIN puede ver/generar gastos
+    if (role !== "ADMIN") {
         return (
             <div className="px-4 sm:px-6 lg:px-8 py-6">
                 <div className="max-w-md mx-auto bg-white rounded-lg border shadow-sm p-6 flex flex-col gap-3">
@@ -24,7 +31,7 @@ export default async function ExpensesPage() {
     }
     return (
         <div className='p-4 flex flex-col gap-5'>
-            <ExpensesModule role={user.role}/>
+            <ExpensesModule role={role}/>
         </div>
     )
 }

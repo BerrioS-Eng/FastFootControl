@@ -2,7 +2,7 @@ import type {Metadata} from "next";
 import {Geist, Geist_Mono} from "next/font/google";
 import "./globals.css";
 import {AppProviders} from "@/app/providers";
-import { Toaster } from "@/components/ui/sonner";
+import {Toaster} from "@/components/ui/sonner";
 import React from "react";
 
 const geistSans = Geist({
@@ -28,7 +28,7 @@ export default function RootLayout({children}: Readonly<{ children: React.ReactN
         >
         <AppProviders>
             {children}
-            <Toaster position="top-center" richColors />
+            <Toaster position="top-center" richColors/>
         </AppProviders>
         </body>
         </html>

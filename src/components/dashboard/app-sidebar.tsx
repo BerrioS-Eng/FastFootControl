@@ -15,6 +15,7 @@ import type { UserLoginResponse } from "@/lib/auth/types"
 import type { Role } from "@/lib/auth/types"
 import {filterNavItemsByRole, navMain} from "@/components/dashboard/nav-config";
 import {IconInnerShadowTop} from "@tabler/icons-react";
+import Link from "next/link";
 
 export function AppSidebar(
     { user, ...props }: React.ComponentProps<typeof Sidebar> & { user: UserLoginResponse | null },
@@ -28,10 +29,10 @@ export function AppSidebar(
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button:!p-1.5">
-                            <a href="#">
+                            <Link href="/">
                                 <IconInnerShadowTop className="!size-5" />
                                 <span className="text-base font-semibold">Delichicharrones</span>
-                            </a>
+                            </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>

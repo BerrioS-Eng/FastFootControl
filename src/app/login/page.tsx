@@ -1,8 +1,7 @@
 "use client";
 import React from "react";
 import {useRouter, useSearchParams} from "next/navigation";
-import {http} from "@/lib/api/http";
-import type {UserLoginResponse} from "@/lib/auth/types";
+import { signIn } from "next-auth/react";
 import {z} from "zod";
 import {LoginSchema} from "@/app/login/schema/login.schema";
 import {useForm} from "react-hook-form";
@@ -35,7 +34,6 @@ import {
 } from "@tabler/icons-react";
 import Image from "next/image";
 
-type LoginRouteResponse = { user: UserLoginResponse };
 type FormValues = z.infer<typeof LoginSchema>;
 
 export default function LoginPage() {
@@ -46,30 +44,30 @@ export default function LoginPage() {
 
     const form = useForm<FormValues>({
         resolver: zodResolver(LoginSchema),
-        defaultValues: {userName: "", password: ""},
+        defaultValues: { userName: "", password: "" },
         mode: "onSubmit",
     });
 
     const onSubmit = async (values: FormValues) => {
         setError(null);
-        try {
-            await http<LoginRouteResponse>("", "/api/auth/login", {
-                method: "POST",
-                body: JSON.stringify(values),
-            });
-            const from = searchParams.get("from") || "/dashboard";
-            router.replace(from);
-        } catch (e: any) {
-            const status = typeof e?.status === "number" ? e.status : undefined;
-            // Cualquier 401/403 lo tratamos como credenciales inválidas
-            if (status === 401 || status === 403) {
-                setError("Credenciales inválidas");
-                return;
-            }
-            // Otros errores → mostramos el mensaje si existe
-            const message =
-                e instanceof Error ? e.message : "Ocurrió un error inesperado";
-            setError(message || "Ocurrió un error inesperado");
+
+        const callbackUrl = searchParams.get("from") || "/dashboard";
+
+        const res = await signIn("credentials", {
+            redirect: false,
+            userName: values.userName,
+            password: values.password,
+            callbackUrl,
+        });
+
+        if (res?.error) {
+            // Puedes afinar el mensaje en base a res.error si quieres
+            setError("Credenciales inválidas");
+            return;
+        }
+
+        if (res?.ok) {
+            router.replace(res.url ?? callbackUrl);
         }
     };
 
